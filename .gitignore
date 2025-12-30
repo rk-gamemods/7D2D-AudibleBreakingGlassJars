@@ -1,0 +1,15 @@
+# Build results
+bin/
+obj/
+Debug/
+
+# VS files
+.vs/
+*.user
+*.suo
+
+# Build artifacts
+*.zip
+
+# Keep Release folder but ignore the DLL (it's built)
+Release/**/AudibleBreakingGlassJars.dll
