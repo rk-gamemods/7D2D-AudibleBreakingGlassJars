@@ -11,7 +11,10 @@ using UnityEngine;
 /// </summary>
 public class AudibleBreakingGlassJars : IModApi
 {
-    public static string SoundName = "glassdestroy";
+    private const string DEFAULT_SOUND = "glassdestroy";
+    private const string LOG_PREFIX = "[AudibleBreakingGlassJars]";
+
+    public static string SoundName = DEFAULT_SOUND;
     private static string ModPath;
 
     public void InitMod(Mod _modInstance)
@@ -19,7 +22,7 @@ public class AudibleBreakingGlassJars : IModApi
         ModPath = _modInstance.Path;
         LoadConfig();
 
-        Debug.Log($"[AudibleBreakingGlassJars] Initialized. Using sound: {SoundName}");
+        Debug.Log($"{LOG_PREFIX} Initialized. Using sound: {SoundName}");
 
         var harmony = new Harmony("com.7d2d.audiblebreakingglassjars");
         harmony.PatchAll();
@@ -30,20 +33,48 @@ public class AudibleBreakingGlassJars : IModApi
         try
         {
             string configPath = Path.Combine(ModPath, "Config", "config.xml");
-            if (File.Exists(configPath))
+            if (!File.Exists(configPath))
+                return;
+
+            var doc = new XmlDocument();
+            doc.Load(configPath);
+            var soundNode = doc.SelectSingleNode("//SoundName");
+
+            if (soundNode == null || string.IsNullOrWhiteSpace(soundNode.InnerText))
+                return;
+
+            string configuredSound = soundNode.InnerText.Trim();
+
+            // Security: Reject any paths - only allow simple sound names
+            if (configuredSound.Contains("/") || configuredSound.Contains("\\") || configuredSound.Contains(".."))
             {
-                var doc = new XmlDocument();
-                doc.Load(configPath);
-                var soundNode = doc.SelectSingleNode("//SoundName");
-                if (soundNode != null && !string.IsNullOrWhiteSpace(soundNode.InnerText))
+                Debug.LogWarning($"{LOG_PREFIX} Invalid sound name '{configuredSound}' - paths not allowed. Using default: {DEFAULT_SOUND}");
+                return;
+            }
+
+            // Check if it's a custom sound file in our Sounds folder
+            string soundsFolder = Path.Combine(ModPath, "Sounds");
+            string[] supportedExtensions = { ".wav", ".ogg" };
+
+            foreach (var ext in supportedExtensions)
+            {
+                string customSoundPath = Path.Combine(soundsFolder, configuredSound + ext);
+                if (File.Exists(customSoundPath))
                 {
-                    SoundName = soundNode.InnerText.Trim();
+                    // TODO: Custom sound loading would require registering with game's audio system
+                    // For now, log that we found it but can't load custom sounds yet
+                    Debug.Log($"{LOG_PREFIX} Found custom sound file: {configuredSound}{ext}");
+                    Debug.Log($"{LOG_PREFIX} Note: Custom sound loading not yet implemented. Using as game sound name.");
+                    break;
                 }
             }
+
+            // Use the configured sound name (either built-in game sound or custom)
+            SoundName = configuredSound;
         }
         catch (Exception ex)
         {
-            Debug.LogWarning($"[AudibleBreakingGlassJars] Failed to load config: {ex.Message}");
+            Debug.LogWarning($"{LOG_PREFIX} Failed to load config: {ex.Message}. Using default: {DEFAULT_SOUND}");
         }
     }
 }

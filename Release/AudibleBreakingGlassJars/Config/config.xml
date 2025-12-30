@@ -1,24 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
     <!--
-    Sound to play when glass jar breaks during drinking.
+    Sound name to play when a glass jar breaks.
 
-    Default sounds to try:
-    - glassdestroy   : Glass block destruction sound (default)
-    - itembreak      : Generic item breaking sound (guaranteed to exist)
+    Built-in game sounds you can use:
+      glassdestroy  - Glass block destruction (default)
+      itembreak     - Generic item breaking
 
-    Custom sound:
-    You can add your own sound by:
-    1. Adding a sounds.xml to this mod that defines your custom sound
-    2. Placing the audio file in Resources/ folder
-    3. Setting the sound name below
+    Custom sounds:
+      1. Place your .wav or .ogg file in the Sounds/ folder next to this Config/ folder
+      2. Enter just the filename WITHOUT the extension below
+      Example: If you add "Sounds/myglassbreak.ogg", set SoundName to "myglassbreak"
 
-    Audio format guidelines:
-    - Format: WAV or OGG recommended
-    - Sample rate: 44100 Hz
-    - Channels: Mono preferred for in-head sounds
-    - Duration: 0.5-2 seconds
-    - Volume: Normalize to -12dB to -6dB peak
+    Note: Only simple names allowed - no paths (/, \) permitted for security.
     -->
     <SoundName>glassdestroy</SoundName>
 </config>
