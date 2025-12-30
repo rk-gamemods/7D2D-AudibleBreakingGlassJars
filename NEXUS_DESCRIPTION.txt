@@ -1,0 +1,158 @@
+================================================================================
+BRIEF OVERVIEW (350 character limit)
+================================================================================
+
+Adds a glass breaking sound effect when drinking from jars causes the jar to break instead of being returned. The game has a jar return percentage setting but gives no audio feedback when jars break. Now you'll know instantly when you've lost a jar.
+
+Character count: 269
+
+================================================================================
+DETAILED DESCRIPTION (BBCode)
+================================================================================
+
+[size=4][b]What Does This Mod Do?[/b][/size]
+
+In 7 Days to Die, when you drink from a glass jar (water, tea, etc.), there's a configurable "Jar Return Percentage" that determines whether you get the empty jar back or it breaks. The problem? [b]There's no audio feedback[/b] when a jar breaks - you only notice later when checking your inventory.
+
+This mod adds a satisfying glass breaking sound effect when your jar doesn't survive the drink. Now you'll know immediately whether you got your jar back or lost it.
+
+[line]
+
+[size=4][b]Features[/b][/size]
+
+[list]
+[*]Plays a glass shattering sound when jars break during consumption
+[*]Works with the game's Jar Return Percentage setting (0-100%)
+[*]Includes a custom high-quality glass breaking sound (royalty-free)
+[*]Can use built-in game sounds instead if preferred
+[*]Configurable via XML config file
+[*]Debug mode for troubleshooting
+[*]Lightweight - only observes the game, doesn't modify core mechanics
+[/list]
+
+[line]
+
+[size=4][b]How It Works[/b][/size]
+
+The mod detects when you drink a jarred beverage and checks whether an empty jar was returned to your inventory. If not, it plays the glass breaking sound. Simple and unobtrusive.
+
+[b]Sound plays when:[/b]
+[list]
+[*]Jar Return = 0% - Sound plays every time (all jars break)
+[*]Jar Return = 50% - Sound plays about half the time
+[*]Jar Return = 100% - Sound never plays (all jars return)
+[/list]
+
+[line]
+
+[size=4][b]Requirements[/b][/size]
+
+[list]
+[*]7 Days to Die V1.0+ (tested on V1.2)
+[*]EAC must be disabled (required for all DLL mods)
+[*]No other dependencies
+[/list]
+
+[line]
+
+[size=4][b]Installation[/b][/size]
+
+[list=1]
+[*]Download the file and extract the zip
+[*]Copy the [b]AudibleBreakingGlassJars[/b] folder to your [b]7 Days To Die/Mods/[/b] folder
+[*]You should have: [b]Mods/AudibleBreakingGlassJars/AudibleBreakingGlassJars.dll[/b]
+[*]Launch the game with EAC disabled
+[/list]
+
+To disable EAC: Right-click the game in Steam > Properties > General. In the [b]Select Launch Option[/b] dropdown, choose [b]Launch Game without EAC[/b].
+
+To uninstall: Delete the [b]Mods/AudibleBreakingGlassJars/[/b] folder.
+
+[line]
+
+[size=4][b]Configuration[/b][/size]
+
+Edit [b]Config/config.xml[/b] in the mod folder:
+
+[code]
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <SoundName>glass-shatter</SoundName>
+    <DebugMode>false</DebugMode>
+</config>
+[/code]
+
+[b]Sound Options:[/b]
+[list]
+[*][b]glass-shatter[/b] - Custom glass breaking sound (default, included)
+[*][b]glassdestroy[/b] - Game's glass block destruction sound (loud, dramatic)
+[*][b]itembreak[/b] - Game's generic item breaking sound
+[/list]
+
+The mod automatically detects if a matching audio file exists in the [b]Sounds/[/b] folder. If found, it loads that custom sound. If not, it uses the game's built-in sound system.
+
+[b]Debug Mode:[/b]
+Set [b]DebugMode[/b] to [b]true[/b] to see detailed logging in the game console. Look for messages starting with [b][ABGJ-Debug][/b]. Useful for troubleshooting.
+
+[line]
+
+[size=4][b]Custom Sounds[/b][/size]
+
+Want to use your own glass breaking sound?
+
+[list=1]
+[*]Place your audio file in the [b]Sounds/[/b] folder
+[*]Supported formats: [b].ogg[/b] or [b].wav[/b]
+[*]Name it whatever you want (e.g., [b]my-sound.ogg[/b])
+[*]Set [b]SoundName[/b] in config.xml to match (without extension): [b]my-sound[/b]
+[/list]
+
+[b]Recommended audio specs:[/b]
+[list]
+[*]Format: OGG Vorbis (smaller) or WAV (uncompressed)
+[*]Sample rate: 44100 Hz
+[*]Channels: Mono or Stereo
+[*]Duration: 0.5-2 seconds
+[/list]
+
+[line]
+
+[size=4][b]Mod Compatibility[/b][/size]
+
+This mod is [b]highly compatible[/b] with other mods because:
+[list]
+[*]It only [b]reads[/b] inventory counts - never modifies items
+[*]Uses Harmony patches that observe, not replace
+[*]Works alongside inventory mods, backpack expansions, etc.
+[/list]
+
+[b]Tested compatible with:[/b]
+[list]
+[*]ProxiCraft (Craft from Containers)
+[*]AGF Backpack mods
+[*]Most UI overhauls
+[/list]
+
+[line]
+
+[size=4][b]Multiplayer[/b][/size]
+
+Should work in multiplayer - each player hears their own jar break sounds locally. Not extensively tested.
+
+[line]
+
+[size=4][b]Source Code[/b][/size]
+
+This mod is open source under the MIT license.
+
+[url=https://github.com/rk-gamemods/7D2D-AudibleBreakingGlassJars]View on GitHub[/url]
+
+[line]
+
+[size=4][b]Feedback & Bug Reports[/b][/size]
+
+Found a bug? Have a suggestion?
+
+[url=https://github.com/rk-gamemods/7D2D-AudibleBreakingGlassJars/issues]Report an issue on GitHub[/url]
+
+Or leave a comment on this mod page.

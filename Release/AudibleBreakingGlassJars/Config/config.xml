@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
     <!--
-    Sound name to play when a glass jar breaks.
+    Sound to play when a glass jar breaks during consumption.
 
-    Built-in game sounds you can use:
-      glassdestroy  - Glass block destruction (default)
-      itembreak     - Generic item breaking
+    Custom sounds (place .ogg or .wav file in Sounds/ folder):
+      glass-shatter  - Custom glass breaking sound (default, included)
 
-    Custom sounds:
-      1. Place your .wav or .ogg file in the Sounds/ folder next to this Config/ folder
-      2. Enter just the filename WITHOUT the extension below
-      Example: If you add "Sounds/myglassbreak.ogg", set SoundName to "myglassbreak"
+    Game sounds (no file needed, uses built-in game audio):
+      glassdestroy   - Glass block destruction sound (loud, dramatic)
+      itembreak      - Generic item breaking sound
 
-    Note: Only simple names allowed - no paths (/, \) permitted for security.
+    The mod will automatically detect if a matching file exists in Sounds/
+    and load it at runtime. If not found, it uses the game's sound system.
     -->
-    <SoundName>glassdestroy</SoundName>
+    <SoundName>glass-shatter</SoundName>
+
+    <!-- Set to true to enable debug logging (check game console/log for [ABGJ-Debug] messages) -->
+    <DebugMode>false</DebugMode>
 </config>
