@@ -39,12 +39,13 @@
     </Reference>
   </ItemGroup>
 
-  <!-- Create release zip after build -->
+  <!-- Create release zip after build (zip to root, then move to Release) -->
   <Target Name="CreateReleaseZip" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
-    <Delete Files="$(ProjectDir)AudibleBreakingGlassJars.zip" Condition="Exists('$(ProjectDir)AudibleBreakingGlassJars.zip')" />
+    <Delete Files="$(ProjectDir)Release\AudibleBreakingGlassJars.zip" Condition="Exists('$(ProjectDir)Release\AudibleBreakingGlassJars.zip')" />
     <ZipDirectory SourceDirectory="$(ProjectDir)Release"
                   DestinationFile="$(ProjectDir)AudibleBreakingGlassJars.zip"
                   Overwrite="true" />
-    <Message Importance="High" Text="Created AudibleBreakingGlassJars.zip" />
+    <Move SourceFiles="$(ProjectDir)AudibleBreakingGlassJars.zip" DestinationFiles="$(ProjectDir)Release\AudibleBreakingGlassJars.zip" />
+    <Message Importance="High" Text="Created Release\AudibleBreakingGlassJars.zip" />
   </Target>
 </Project>
