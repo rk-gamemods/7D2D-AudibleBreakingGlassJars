@@ -112,12 +112,13 @@ This mod is [b]highly compatible[/b] with other mods because:
 [*]Works alongside inventory mods, backpack expansions, etc.
 [/list]
 
-[b]Tested compatible with:[/b]
+[b]Tested with:[/b]
 [list]
 [*]ProxiCraft (Craft from Containers)
 [*]AGF Backpack mods
-[*]Most UI overhauls
 [/list]
+
+Conflicts are unlikely since this mod only reads inventory counts and plays audio.
 
 [line]
 
