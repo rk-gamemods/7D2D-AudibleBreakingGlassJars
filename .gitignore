@@ -8,6 +8,4 @@ Debug/
 *.user
 *.suo
 
-# Keep Release folder but ignore built artifacts
-Release/**/AudibleBreakingGlassJars.dll
-Release/*.zip
+# Release folder - include everything for distribution
