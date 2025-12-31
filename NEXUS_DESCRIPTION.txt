@@ -2,9 +2,9 @@
 BRIEF OVERVIEW (350 character limit)
 ================================================================================
 
-Adds a glass breaking sound effect when drinking from jars causes the jar to break instead of being returned. The game has a jar return percentage setting but gives no audio feedback when jars break. Now you'll know instantly when you've lost a jar.
+Adds a glass breaking sound when drinking from jars causes the jar to break. The game's jar return percentage setting is completely silent - now you'll hear when you lose a jar. Configurable sounds, supports custom audio.
 
-Character count: 269
+Character count: 223
 
 ================================================================================
 DETAILED DESCRIPTION (BBCode)
@@ -12,35 +12,33 @@ DETAILED DESCRIPTION (BBCode)
 
 [size=4][b]What Does This Mod Do?[/b][/size]
 
-In 7 Days to Die, when you drink from a glass jar (water, tea, etc.), there's a configurable "Jar Return Percentage" that determines whether you get the empty jar back or it breaks. The problem? [b]There's no audio feedback[/b] when a jar breaks - you only notice later when checking your inventory.
+When you drink from a glass jar (water, tea, etc.), there's a configurable "Jar Return Percentage" that determines whether you get the empty jar back or it breaks. The problem? [b]There's no audio feedback[/b] when a jar breaks - you only notice later when checking your inventory.
 
-This mod adds a satisfying glass breaking sound effect when your jar doesn't survive the drink. Now you'll know immediately whether you got your jar back or lost it.
+This mod plays a glass shatter sound when your jar doesn't survive. Now you'll know immediately when you've lost one.
 
 [line]
 
 [size=4][b]Features[/b][/size]
 
 [list]
-[*]Plays a glass shattering sound when jars break during consumption
 [*]Works with the game's Jar Return Percentage setting (0-100%)
-[*]Includes a custom high-quality glass breaking sound (royalty-free)
-[*]Can use built-in game sounds instead or your own custom sound if preferred
-[*]Configurable via XML config file
-[*]Debug mode for troubleshooting
-[*]Lightweight - only observes the game, doesn't modify core mechanics
+[*]Includes a custom glass shatter sound (royalty-free)
+[*]Can use built-in game sounds or your own custom audio
+[*]Configurable via XML
+[*]Debug mode available
 [/list]
 
 [line]
 
 [size=4][b]How It Works[/b][/size]
 
-The mod detects when you drink a jarred beverage and checks whether an empty jar was returned to your inventory. If not, it plays the glass breaking sound. Simple and unobtrusive.
+The mod detects when you drink from a jar and checks whether an empty jar was returned to your inventory. If not, it plays the sound.
 
-[b]Sound plays when:[/b]
+[b]When the sound plays:[/b]
 [list]
-[*]Jar Return = 0% - Sound plays every time (all jars break)
-[*]Jar Return = 50% - Sound plays about half the time
-[*]Jar Return = 100% - Sound never plays (all jars return)
+[*]Jar Return = 0% - Every time (all jars break)
+[*]Jar Return = 50% - About half the time
+[*]Jar Return = 100% - Never (all jars return)
 [/list]
 
 [line]
@@ -58,7 +56,7 @@ The mod detects when you drink a jarred beverage and checks whether an empty jar
 [size=4][b]Installation[/b][/size]
 
 [list=1]
-[*]Download the file and extract the zip
+[*]Download and extract the mod
 [*]Copy the [b]AudibleBreakingGlassJars[/b] folder to your [b]7 Days To Die/Mods/[/b] folder
 [*]You should have: [b]Mods/AudibleBreakingGlassJars/AudibleBreakingGlassJars.dll[/b]
 [*]Launch the game with EAC disabled
@@ -84,31 +82,28 @@ Edit [b]Config/config.xml[/b] in the mod folder:
 
 [b]Sound Options:[/b]
 [list]
-[*][b]glass-shatter[/b] (default) - Included custom sound that sounds like a jar breaking
-[*][b]glassdestroy[/b] - Game's built-in glass sound - louder, like a window breaking
-[*][b]Your own sound[/b] - Drop any .ogg or .wav file in the Sounds/ folder and set the name in config
+[*][b]glass-shatter[/b] (default) - Custom jar-breaking sound. Default because the game's sounds are designed for glass blocks, not jars.
+[*][b]glassdestroy[/b] - Game's built-in sound - louder, like a window breaking
+[*][b]Your own sound[/b] - Add any .ogg or .wav to Sounds/ folder, set the filename in config
 [/list]
-
-The custom sound is the default because the game's glass sound is designed for breaking glass blocks, not jars.
 
 [b]Using Your Own Sound:[/b]
 [list=1]
 [*]Place your .ogg or .wav file in the [b]Sounds/[/b] folder
 [*]Set [b]SoundName[/b] in config.xml to the filename (without extension)
 [/list]
-That's it! The mod auto-detects files in the Sounds folder.
 
 [b]Debug Mode:[/b]
-Set [b]DebugMode[/b] to [b]true[/b] to see detailed logging in the game console. Look for messages starting with [b][ABGJ-Debug][/b]. Useful for troubleshooting.
+Set [b]DebugMode[/b] to [b]true[/b] for detailed logging. Look for [b][ABGJ-Debug][/b] messages in the game console.
 
 [line]
 
 [size=4][b]Mod Compatibility[/b][/size]
 
-This mod is [b]highly compatible[/b] with other mods because:
+This mod should work well with other mods because:
 [list]
-[*]It only [b]reads[/b] inventory counts - never modifies items
-[*]Uses Harmony patches that observe, not replace
+[*]Read-only - checks inventory counts, never modifies items
+[*]Uses non-destructive Harmony patches
 [*]Works alongside inventory mods, backpack expansions, etc.
 [/list]
 
@@ -118,21 +113,19 @@ This mod is [b]highly compatible[/b] with other mods because:
 [*]AGF Backpack mods
 [/list]
 
-Conflicts are unlikely since this mod only reads inventory counts and plays audio.
-
 [line]
 
 [size=4][b]Multiplayer[/b][/size]
 
-[b]Not tested.[/b] Here's what we expect:
+[b]Not tested.[/b] Based on how the mod works:
 
 [list]
-[*][b]Client-side only[/b] - Each player should hear their own jar break sounds locally
-[*][b]No server install needed[/b] - The mod only reads your local inventory and plays sounds
-[*][b]Custom sounds[/b] - Unknown if runtime-loaded audio works in multiplayer; game sounds should work
+[*][b]Client-side only[/b] - Each player hears their own sounds locally
+[*][b]No server install needed[/b] - Only reads local inventory and plays audio
+[*][b]Custom sounds[/b] - May not work; built-in game sounds should be fine
 [/list]
 
-If you test this in multiplayer, please let us know how it works!
+If you test this in multiplayer, please share your results!
 
 [line]
 
