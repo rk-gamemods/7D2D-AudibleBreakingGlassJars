@@ -24,7 +24,7 @@ This mod adds a satisfying glass breaking sound effect when your jar doesn't sur
 [*]Plays a glass shattering sound when jars break during consumption
 [*]Works with the game's Jar Return Percentage setting (0-100%)
 [*]Includes a custom high-quality glass breaking sound (royalty-free)
-[*]Can use built-in game sounds instead if preferred
+[*]Can use built-in game sounds instead or your own custom sound if preferred
 [*]Configurable via XML config file
 [*]Debug mode for troubleshooting
 [*]Lightweight - only observes the game, doesn't modify core mechanics
@@ -48,7 +48,7 @@ The mod detects when you drink a jarred beverage and checks whether an empty jar
 [size=4][b]Requirements[/b][/size]
 
 [list]
-[*]7 Days to Die V1.0+ (tested on V1.2)
+[*]7 Days to Die V2.5 (tested)
 [*]EAC must be disabled (required for all DLL mods)
 [*]No other dependencies
 [/list]
@@ -137,7 +137,15 @@ This mod is [b]highly compatible[/b] with other mods because:
 
 [size=4][b]Multiplayer[/b][/size]
 
-Should work in multiplayer - each player hears their own jar break sounds locally. Not extensively tested.
+[b]Not tested.[/b] Here's what we expect:
+
+[list]
+[*][b]Client-side only[/b] - Each player should hear their own jar break sounds locally
+[*][b]No server install needed[/b] - The mod only reads your local inventory and plays sounds
+[*][b]Custom sounds[/b] - Unknown if runtime-loaded audio works in multiplayer; game sounds should work
+[/list]
+
+If you test this in multiplayer, please let us know how it works!
 
 [line]
 
