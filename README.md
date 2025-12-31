@@ -59,9 +59,9 @@ Edit `Config/config.xml` in the mod folder:
 |------------|-------------|
 | `glass-shatter` | (default) Included custom sound - sounds like a jar breaking |
 | `glassdestroy` | Game's built-in glass sound - louder, like a window |
-| *Your own* | Drop any `.ogg` or `.wav` in `Sounds/` folder, set the name in config |
+| *Your own* | Add a `.ogg` or `.wav` to `Sounds/`, set the filename in config |
 
-The custom sound is the default because the game's glass sound is designed for breaking glass blocks, not jars. Adding your own sound is easy - just drop a file in the Sounds folder.
+The custom sound is the default because the game's glass sound is designed for breaking glass blocks, not jars.
 
 ## How It Works
 
