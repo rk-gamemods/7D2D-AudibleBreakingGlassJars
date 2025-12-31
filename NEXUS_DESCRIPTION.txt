@@ -109,7 +109,7 @@ This mod should work well with other mods because:
 
 [b]Tested with:[/b]
 [list]
-[*]ProxiCraft (Craft from Containers)
+[*]ProxiCraft
 [*]AGF Backpack mods
 [/list]
 
@@ -122,7 +122,7 @@ This mod should work well with other mods because:
 [list]
 [*][b]Client-side only[/b] - Each player hears their own sounds locally
 [*][b]No server install needed[/b] - Only reads local inventory and plays audio
-[*][b]Custom sounds[/b] - May not work; built-in game sounds should be fine
+[*][b]Custom sounds[/b] - May work; built-in game sounds should be fine
 [/list]
 
 If you test this in multiplayer, please share your results!
