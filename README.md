@@ -2,6 +2,8 @@
 
 A 7 Days to Die mod that adds audio feedback when drinking from glass jars causes the jar to break.
 
+## ⬇️ [Download AudibleBreakingGlassJars-1.0.0.zip](https://github.com/rk-gamemods/7D2D-AudibleBreakingGlassJars/raw/master/Release/AudibleBreakingGlassJars-1.0.0.zip)
+
 ## The Problem
 
 In 7 Days to Die, when you drink from a glass jar (water, tea, etc.), the game has a "Jar Return Percentage" setting that determines whether you get the empty jar back. But there's **no audio feedback** when a jar breaks - you only notice later when checking your inventory.
@@ -9,10 +11,6 @@ In 7 Days to Die, when you drink from a glass jar (water, tea, etc.), the game h
 ## The Solution
 
 This mod plays a glass breaking sound effect when your jar doesn't survive the drink. Now you'll know immediately whether you got your jar back or lost it.
-
-## Download
-
-**[Download AudibleBreakingGlassJars-1.0.0.zip](https://github.com/rk-gamemods/7D2D-AudibleBreakingGlassJars/raw/master/Release/AudibleBreakingGlassJars-1.0.0.zip)**
 
 ## Features
 
