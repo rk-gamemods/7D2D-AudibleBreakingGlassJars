@@ -84,10 +84,11 @@ Edit [b]Config/config.xml[/b] in the mod folder:
 
 [b]Sound Options:[/b]
 [list]
-[*][b]glass-shatter[/b] - Custom glass breaking sound (default, included)
-[*][b]glassdestroy[/b] - Game's glass block destruction sound (loud, dramatic)
-[*][b]itembreak[/b] - Game's generic item breaking sound
+[*][b]glass-shatter[/b] - Custom glass breaking sound (default, included) - sounds like a jar breaking
+[*][b]glassdestroy[/b] - Game's built-in glass destruction sound - louder, more dramatic, like a window breaking
 [/list]
+
+The custom sound is the default because the game's glass sound is designed for breaking glass blocks, not jars. The game sound option is available for those who prefer it, for potential multiplayer compatibility, or in case a better game sound is added in a future release.
 
 The mod automatically detects if a matching audio file exists in the [b]Sounds/[/b] folder. If found, it loads that custom sound. If not, it uses the game's built-in sound system.
 

@@ -4,11 +4,15 @@
     Sound to play when a glass jar breaks during consumption.
 
     Custom sounds (place .ogg or .wav file in Sounds/ folder):
-      glass-shatter  - Custom glass breaking sound (default, included)
+      glass-shatter  - Custom glass breaking sound (default, included) - sounds like a jar
 
     Game sounds (no file needed, uses built-in game audio):
-      glassdestroy   - Glass block destruction sound (loud, dramatic)
-      itembreak      - Generic item breaking sound
+      glassdestroy   - Game's glass destruction sound - louder, like a window breaking
+
+    The custom sound is the default because the game's glass sound is designed for
+    breaking glass blocks, not jars. The game sound option is available for those
+    who prefer it, for potential multiplayer compatibility, or in case a better
+    game sound is added in a future release.
 
     The mod will automatically detect if a matching file exists in Sounds/
     and load it at runtime. If not found, it uses the game's sound system.
