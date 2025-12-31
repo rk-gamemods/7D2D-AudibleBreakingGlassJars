@@ -51,9 +51,15 @@
     </Reference>
   </ItemGroup>
 
-  <!-- Create release zip after build (zip to root, then move to Release) -->
-  <Target Name="CreateReleaseZip" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
+  <!-- Force clean rebuild of release binaries every time -->
+  <Target Name="CleanReleaseBinaries" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release'">
+    <Delete Files="$(ProjectDir)Release\AudibleBreakingGlassJars\AudibleBreakingGlassJars.dll" Condition="Exists('$(ProjectDir)Release\AudibleBreakingGlassJars\AudibleBreakingGlassJars.dll')" />
+    <Delete Files="$(ProjectDir)Release\AudibleBreakingGlassJars\AudibleBreakingGlassJars.pdb" Condition="Exists('$(ProjectDir)Release\AudibleBreakingGlassJars\AudibleBreakingGlassJars.pdb')" />
     <Delete Files="$(ProjectDir)Release\AudibleBreakingGlassJars.zip" Condition="Exists('$(ProjectDir)Release\AudibleBreakingGlassJars.zip')" />
+  </Target>
+
+  <!-- Create release zip after build -->
+  <Target Name="CreateReleaseZip" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
     <ZipDirectory SourceDirectory="$(ProjectDir)Release"
                   DestinationFile="$(ProjectDir)AudibleBreakingGlassJars.zip"
                   Overwrite="true" />
