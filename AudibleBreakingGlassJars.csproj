@@ -21,7 +21,8 @@
 
   <!-- Source files -->
   <ItemGroup>
-    <Compile Include="Harmony_ItemActionEat.cs" />
+    <Compile Include="AudibleBreakingGlassJars\Harmony_ItemActionEat.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -54,16 +55,16 @@
   <!-- Force fresh binaries every Release build by cleaning intermediate files -->
   <Target Name="CleanForFreshBuild" BeforeTargets="BeforeBuild" Condition="'$(Configuration)' == 'Release'">
     <Delete Files="$(IntermediateOutputPath)$(AssemblyName).dll" Condition="Exists('$(IntermediateOutputPath)$(AssemblyName).dll')" />
-    <Delete Files="$(ProjectDir)Release\AudibleBreakingGlassJars.zip" Condition="Exists('$(ProjectDir)Release\AudibleBreakingGlassJars.zip')" />
+    <Delete Files="$(ProjectDir)Release\AudibleBreakingGlassJars-1.0.0.zip" Condition="Exists('$(ProjectDir)Release\AudibleBreakingGlassJars-1.0.0.zip')" />
     <Message Importance="High" Text="Cleaning for fresh release build..." />
   </Target>
 
   <!-- Create release zip after build -->
   <Target Name="CreateReleaseZip" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
     <ZipDirectory SourceDirectory="$(ProjectDir)Release"
-                  DestinationFile="$(ProjectDir)AudibleBreakingGlassJars.zip"
+                  DestinationFile="$(ProjectDir)AudibleBreakingGlassJars-1.0.0.zip"
                   Overwrite="true" />
-    <Move SourceFiles="$(ProjectDir)AudibleBreakingGlassJars.zip" DestinationFiles="$(ProjectDir)Release\AudibleBreakingGlassJars.zip" />
-    <Message Importance="High" Text="Created Release\AudibleBreakingGlassJars.zip" />
+    <Move SourceFiles="$(ProjectDir)AudibleBreakingGlassJars-1.0.0.zip" DestinationFiles="$(ProjectDir)Release\AudibleBreakingGlassJars-1.0.0.zip" />
+    <Message Importance="High" Text="Created Release\AudibleBreakingGlassJars-1.0.0.zip" />
   </Target>
 </Project>

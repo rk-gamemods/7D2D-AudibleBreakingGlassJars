@@ -12,7 +12,7 @@ This mod plays a glass breaking sound effect when your jar doesn't survive the d
 
 ## Download
 
-**[Download AudibleBreakingGlassJars.zip](https://github.com/rk-gamemods/7D2D-AudibleBreakingGlassJars/raw/master/Release/AudibleBreakingGlassJars.zip)**
+**[Download AudibleBreakingGlassJars-1.0.0.zip](https://github.com/rk-gamemods/7D2D-AudibleBreakingGlassJars/raw/master/Release/AudibleBreakingGlassJars-1.0.0.zip)**
 
 ## Features
 
