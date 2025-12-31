@@ -84,37 +84,22 @@ Edit [b]Config/config.xml[/b] in the mod folder:
 
 [b]Sound Options:[/b]
 [list]
-[*][b]glass-shatter[/b] - Custom glass breaking sound (default, included) - sounds like a jar breaking
-[*][b]glassdestroy[/b] - Game's built-in glass destruction sound - louder, more dramatic, like a window breaking
+[*][b]glass-shatter[/b] (default) - Included custom sound that sounds like a jar breaking
+[*][b]glassdestroy[/b] - Game's built-in glass sound - louder, like a window breaking
+[*][b]Your own sound[/b] - Drop any .ogg or .wav file in the Sounds/ folder and set the name in config
 [/list]
 
-The custom sound is the default because the game's glass sound is designed for breaking glass blocks, not jars. The game sound option is available for those who prefer it, for potential multiplayer compatibility, or in case a better game sound is added in a future release.
+The custom sound is the default because the game's glass sound is designed for breaking glass blocks, not jars.
 
-The mod automatically detects if a matching audio file exists in the [b]Sounds/[/b] folder. If found, it loads that custom sound. If not, it uses the game's built-in sound system.
+[b]Using Your Own Sound:[/b]
+[list=1]
+[*]Place your .ogg or .wav file in the [b]Sounds/[/b] folder
+[*]Set [b]SoundName[/b] in config.xml to the filename (without extension)
+[/list]
+That's it! The mod auto-detects files in the Sounds folder.
 
 [b]Debug Mode:[/b]
 Set [b]DebugMode[/b] to [b]true[/b] to see detailed logging in the game console. Look for messages starting with [b][ABGJ-Debug][/b]. Useful for troubleshooting.
-
-[line]
-
-[size=4][b]Custom Sounds[/b][/size]
-
-Want to use your own glass breaking sound?
-
-[list=1]
-[*]Place your audio file in the [b]Sounds/[/b] folder
-[*]Supported formats: [b].ogg[/b] or [b].wav[/b]
-[*]Name it whatever you want (e.g., [b]my-sound.ogg[/b])
-[*]Set [b]SoundName[/b] in config.xml to match (without extension): [b]my-sound[/b]
-[/list]
-
-[b]Recommended audio specs:[/b]
-[list]
-[*]Format: OGG Vorbis (smaller) or WAV (uncompressed)
-[*]Sample rate: 44100 Hz
-[*]Channels: Mono or Stereo
-[*]Duration: 0.5-2 seconds
-[/list]
 
 [line]
 
