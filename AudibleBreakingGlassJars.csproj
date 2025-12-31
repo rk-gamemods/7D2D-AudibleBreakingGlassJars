@@ -51,11 +51,11 @@
     </Reference>
   </ItemGroup>
 
-  <!-- Force clean rebuild of release binaries every time -->
-  <Target Name="CleanReleaseBinaries" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release'">
-    <Delete Files="$(ProjectDir)Release\AudibleBreakingGlassJars\AudibleBreakingGlassJars.dll" Condition="Exists('$(ProjectDir)Release\AudibleBreakingGlassJars\AudibleBreakingGlassJars.dll')" />
-    <Delete Files="$(ProjectDir)Release\AudibleBreakingGlassJars\AudibleBreakingGlassJars.pdb" Condition="Exists('$(ProjectDir)Release\AudibleBreakingGlassJars\AudibleBreakingGlassJars.pdb')" />
+  <!-- Force fresh binaries every Release build by cleaning intermediate files -->
+  <Target Name="CleanForFreshBuild" BeforeTargets="BeforeBuild" Condition="'$(Configuration)' == 'Release'">
+    <Delete Files="$(IntermediateOutputPath)$(AssemblyName).dll" Condition="Exists('$(IntermediateOutputPath)$(AssemblyName).dll')" />
     <Delete Files="$(ProjectDir)Release\AudibleBreakingGlassJars.zip" Condition="Exists('$(ProjectDir)Release\AudibleBreakingGlassJars.zip')" />
+    <Message Importance="High" Text="Cleaning for fresh release build..." />
   </Target>
 
   <!-- Create release zip after build -->
