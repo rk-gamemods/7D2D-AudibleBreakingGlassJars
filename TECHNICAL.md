@@ -4,7 +4,7 @@
 
 This mod plays an audio cue when drinking a jarred beverage results in the glass jar breaking (not being returned to inventory). The game has a configurable "Jar Return Percentage" setting (0-100%) but provides no audio feedback when jars break vs. are returned.
 
-**Target Version:** 7 Days to Die V1.1 (b14)
+**Target Version:** 7 Days to Die V2.5 (b23)
 
 ## Architecture
 

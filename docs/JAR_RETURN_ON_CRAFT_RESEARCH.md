@@ -4,7 +4,7 @@
 **Type:** C# Harmony Addon Mod  
 **Parent Mod:** AudibleBreakingGlassJars  
 **Research Date:** January 11, 2026  
-**Game Version:** 7 Days to Die V1.1 (b14)
+**Game Version:** 7 Days to Die V2.5 (b23)
 
 ---
 

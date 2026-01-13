@@ -2,7 +2,7 @@
 
 A 7 Days to Die mod that adds audio feedback when drinking from glass jars causes the jar to break.
 
-**Target Version:** 7 Days to Die V1.1 (b14)
+**Target Version:** 7 Days to Die V2.5 (b23)
 
 ## ⬇️ Downloads
 

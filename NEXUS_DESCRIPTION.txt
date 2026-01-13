@@ -46,7 +46,7 @@ The mod detects when you drink from a jar and checks whether an empty jar was re
 [size=4][b]Requirements[/b][/size]
 
 [list]
-[*]7 Days to Die V1.1 (b14)
+[*]7 Days to Die V2.5 (b23)
 [*]EAC must be disabled (required for all DLL mods)
 [*]No other dependencies
 [/list]
