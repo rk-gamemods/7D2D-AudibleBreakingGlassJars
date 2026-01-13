@@ -2,7 +2,13 @@
 
 A 7 Days to Die mod that adds audio feedback when drinking from glass jars causes the jar to break.
 
-## ⬇️ [Download AudibleBreakingGlassJars-1.0.0.zip](https://github.com/rk-gamemods/7D2D-AudibleBreakingGlassJars/raw/master/Release/AudibleBreakingGlassJars-1.0.0.zip)
+**Target Version:** 7 Days to Die V1.1 (b14)
+
+## ⬇️ Downloads
+
+- **[Main Mod](https://github.com/rk-gamemods/7D2D-AudibleBreakingGlassJars/raw/master/Release/AudibleBreakingGlassJars-1.0.0.zip)** - Glass breaking sound
+- **[Addon: Broken Glass](https://github.com/rk-gamemods/7D2D-AudibleBreakingGlassJars/raw/master/Release/AudibleBreakingGlassJars_Addon_BrokenGlass-0.1.0-beta.zip)** - Get broken glass from broken jars
+- **[Addon: Jar Return](https://github.com/rk-gamemods/7D2D-AudibleBreakingGlassJars/raw/master/Release/AudibleBreakingGlassJars_Addon_JarReturn-0.1.0-beta.zip)** - Fix jar duplication exploit in crafting
 
 ## The Problem
 
@@ -24,21 +30,29 @@ This mod plays a glass breaking sound effect when your jar doesn't survive the d
 
 ## Installation
 
-1. Download the zip using the link above
-2. Extract to `7 Days To Die/Mods/AudibleBreakingGlassJars/`
+1. Download the zip(s) using the links above
+2. Extract to `7 Days To Die/Mods/`
 3. Ensure EAC is disabled (required for all DLL mods)
 
 Your folder structure should be:
 ```
 7 Days To Die/
 └── Mods/
-    └── AudibleBreakingGlassJars/
+    └── AudibleBreakingGlassJars/           # Main mod
         ├── AudibleBreakingGlassJars.dll
         ├── ModInfo.xml
         ├── Config/
         │   └── config.xml
         └── Sounds/
             └── glass-shatter.ogg
+    └── AudibleBreakingGlassJars_Addon_BrokenGlass/   # Optional
+        ├── BrokenGlassFromBrokenJars.dll
+        └── ModInfo.xml
+    └── AudibleBreakingGlassJars_Addon_JarReturn/     # Optional
+        ├── JarReturnOnCraft.dll
+        ├── ModInfo.xml
+        └── Config/
+            └── JarContents.xml              # Optional overrides
 ```
 
 ## Configuration
@@ -62,6 +76,63 @@ Edit `Config/config.xml` in the mod folder:
 | *Your own* | Add a `.ogg` or `.wav` to `Sounds/`, set the filename in config |
 
 The custom sound is the default because the game's glass sound is designed for breaking glass blocks, not jars.
+
+---
+
+## Addon: Broken Glass From Broken Jars
+
+**v0.1.0 Beta**
+
+When a glass jar breaks from drinking, you receive 1x **Broken Glass** (`resourceBrokenGlass`). Makes jar breakage less punishing and more realistic!
+
+### Features
+- Gives 1 broken glass when jars break from drinking
+- Tries backpack first, then toolbelt, then drops on ground
+- Uses same detection as main mod (respects jar return %)
+- Fully independent - works without main mod installed
+
+### Installation
+Copy `AudibleBreakingGlassJars_Addon_BrokenGlass` folder to `Mods/`
+
+---
+
+## Addon: Jar Return On Craft
+
+**v0.1.0 Beta**
+
+Fixes the "jar duplication exploit" in vanilla crafting. When you craft with jar contents (water, tea, etc.), the empty jar is returned **immediately** when crafting starts - and **NOT refunded** if you cancel.
+
+### The Problem
+Vanilla 7D2D lets you start crafting tea, immediately cancel, and get your water back - but keep the jar that was "used" to make the water. This addon closes that loophole.
+
+### Features
+- Returns empty jar when craft job starts (not when complete)
+- Canceling does NOT refund jar contents (water, tea, etc.)
+- Smart detection: only affects jar-content recipes
+- Exception: jar-to-jar recipes (water→tea) use vanilla behavior
+- Dynamic detection works with modded jar items
+- Optional XML config for manual item overrides
+
+### Installation
+Copy `AudibleBreakingGlassJars_Addon_JarReturn` folder to `Mods/`
+
+### ⚠️ Highly Recommended: VanillaJarFix
+
+For a complete jar economy fix, we recommend also using [VanillaJarFix](https://www.nexusmods.com/7daystodie/mods/9353). It removes jar refunds from recipes entirely (at the XML level), so you always get jars back. This addon is fully compatible with VanillaJarFix - if VanillaJarFix removes the jar refund property, this mod automatically respects that.
+
+### Configuration (Optional)
+
+The addon auto-detects jar content items at runtime. For manual overrides, edit `Config/JarContents.xml`:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<JarContents>
+    <!-- Add custom jar content items here -->
+    <Item name="myModdedWater" jarItem="drinkJarEmpty" />
+</JarContents>
+```
+
+---
 
 ## How It Works
 
@@ -98,42 +169,65 @@ See [TECHNICAL.md](TECHNICAL.md) for implementation details.
 
 ```powershell
 cd AudibleBreakingGlassJars
-dotnet build -c Release
+
+# Build main mod
+dotnet build AudibleBreakingGlassJars.csproj -c Release
+
+# Build addons
+dotnet build BrokenGlassFromBrokenJars.csproj -c Release
+dotnet build JarReturnOnCraft.csproj -c Release
 ```
 
 Outputs:
-- `Release/AudibleBreakingGlassJars/` - The mod folder
-- `Release/AudibleBreakingGlassJars.zip` - Distribution package
+- `Release/AudibleBreakingGlassJars/` - Main mod
+- `Release/AudibleBreakingGlassJars_Addon_BrokenGlass/` - Broken glass addon
+- `Release/AudibleBreakingGlassJars_Addon_JarReturn/` - Jar return addon
 
 ## Project Structure
 
 ```
 AudibleBreakingGlassJars/
-├── Harmony_ItemActionEat.cs     # Main mod code
-├── AudibleBreakingGlassJars.csproj
-├── TECHNICAL.md                 # Implementation details
-├── README.md                    # This file
-├── LICENSE                      # MIT License
-├── NEXUS_DESCRIPTION.txt        # Nexus Mods description
+├── AudibleBreakingGlassJars.csproj        # Main mod build
+├── BrokenGlassFromBrokenJars.csproj       # Addon build
+├── JarReturnOnCraft.csproj                # Addon build
+├── src/
+│   ├── AudibleBreakingGlassJars/
+│   │   └── Harmony_ItemActionEat.cs       # Main mod code
+│   ├── BrokenGlassFromBrokenJars/
+│   │   └── BrokenGlassFromBrokenJars.cs   # Broken glass addon
+│   └── JarReturnOnCraft/
+│       ├── JarReturnOnCraft.cs            # Jar detection logic
+│       ├── Patch_ReturnJarOnCraftStart.cs # Return jar when crafting
+│       └── Patch_SkipJarContentOnCancel.cs # Skip refund on cancel
+├── TECHNICAL.md                           # Implementation details
+├── README.md                              # This file
+├── LICENSE                                # MIT License
+├── NEXUS_DESCRIPTION.txt                  # Nexus Mods description
 └── Release/
-    └── AudibleBreakingGlassJars/
-        ├── AudibleBreakingGlassJars.dll
-        ├── ModInfo.xml
-        ├── Config/
-        │   └── config.xml
-        └── Sounds/
-            └── glass-shatter.ogg
+    ├── AudibleBreakingGlassJars/
+    ├── AudibleBreakingGlassJars_Addon_BrokenGlass/
+    └── AudibleBreakingGlassJars_Addon_JarReturn/
 ```
 
 ## Changelog
 
-### v1.0.0 - Initial Release
+### v1.0.0 - AudibleBreakingGlassJars
 - Jar break detection via item count comparison
 - Custom sound loading at runtime (OGG/WAV)
 - Fallback to game sounds if custom sound fails
 - Configurable sound name and debug mode
-- Fixed: Correct item type detection (drinkJarEmpty vs resourceGlassJar)
-- Fixed: Frame delay for inventory update timing
+
+### v0.1.0 Beta - BrokenGlassFromBrokenJars
+- Initial release
+- Gives broken glass when jars break from drinking
+- Independent operation (no main mod required)
+
+### v0.1.0 Beta - JarReturnOnCraft
+- Initial release
+- Returns empty jar when crafting starts
+- Skips jar content refund on cancel
+- Dynamic jar detection + XML config support
+- Jar-to-jar recipe exception handling
 
 ## License
 

@@ -2,9 +2,9 @@
 BRIEF OVERVIEW (350 character limit)
 ================================================================================
 
-Adds a glass breaking sound when drinking from jars causes the jar to break. The game's jar return percentage setting is completely silent - now you'll hear when you lose a jar. Configurable sounds, supports custom audio.
+Adds a glass breaking sound when drinking from jars causes the jar to break. Now you'll hear when you lose a jar! Includes optional addons: get broken glass from broken jars, and fix the jar return exploit in crafting.
 
-Character count: 223
+Character count: 238
 
 ================================================================================
 DETAILED DESCRIPTION (BBCode)
@@ -46,7 +46,7 @@ The mod detects when you drink from a jar and checks whether an empty jar was re
 [size=4][b]Requirements[/b][/size]
 
 [list]
-[*]7 Days to Die V2.5 (tested)
+[*]7 Days to Die V1.1 (b14)
 [*]EAC must be disabled (required for all DLL mods)
 [*]No other dependencies
 [/list]
@@ -144,3 +144,64 @@ Found a bug? Have a suggestion?
 [url=https://github.com/rk-gamemods/7D2D-AudibleBreakingGlassJars/issues]Report an issue on GitHub[/url]
 
 Or leave a comment on this mod page.
+
+[line]
+
+[size=5][b]ADDON MODS (Optional Downloads)[/b][/size]
+
+These addons work independently - you can use any combination:
+
+[line]
+
+[size=4][b]Addon: Broken Glass From Broken Jars[/b][/size]
+[i]v0.1.0 Beta[/i]
+
+When a glass jar breaks from drinking, you now receive 1x [b]Broken Glass[/b] (resourceBrokenGlass). Makes jar breakage less punishing and more realistic - the glass doesn't just vanish!
+
+[b]Features:[/b]
+[list]
+[*]Gives 1 broken glass when jars break from drinking
+[*]Tries backpack first, then toolbelt, then drops on ground
+[*]Uses same detection as main mod (respects jar return %)
+[*]Fully independent - works without main mod installed
+[/list]
+
+[b]Installation:[/b] Copy [b]AudibleBreakingGlassJars_Addon_BrokenGlass[/b] folder to Mods/
+
+[line]
+
+[size=4][b]Addon: Jar Return On Craft[/b][/size]
+[i]v0.1.0 Beta[/i]
+
+Fixes the "jar duplication exploit" in vanilla crafting. When you craft with jar contents (water, tea, etc.), the empty jar is returned [b]immediately[/b] when crafting starts - and [b]NOT refunded[/b] if you cancel.
+
+[b]The Problem:[/b]
+Vanilla 7D2D lets you start crafting tea, immediately cancel, and get your water back - but keep the jar that was "used" to make the water. This addon closes that loophole.
+
+[b]Features:[/b]
+[list]
+[*]Returns empty jar when craft job starts (not when complete)
+[*]Canceling does NOT refund jar contents (water, tea, etc.)
+[*]Smart detection: only affects jar-content recipes
+[*]Exception: jar-to-jar recipes (water→tea) use vanilla behavior
+[*]Dynamic detection works with modded jar items
+[*]Optional XML config for manual item overrides
+[/list]
+
+[b]Installation:[/b] Copy [b]AudibleBreakingGlassJars_Addon_JarReturn[/b] folder to Mods/
+
+[size=3][color=#ff6600][b]⚠️ Highly Recommended: VanillaJarFix[/b][/color][/size]
+
+For a complete jar economy fix, we recommend also using [url=https://www.nexusmods.com/7daystodie/mods/9353]VanillaJarFix[/url]. It removes jar refunds from recipes entirely (at the XML level), so you always get jars back. Our addon is fully compatible with VanillaJarFix - if VanillaJarFix removes the jar refund property, our mod automatically respects that.
+
+[line]
+
+[size=4][b]Addon Compatibility[/b][/size]
+
+[list]
+[*][b]Main mod + BrokenGlass:[/b] Sound plays AND you get broken glass
+[*][b]Main mod + JarReturn:[/b] Sound plays when drinking; jars returned on craft
+[*][b]All three together:[/b] Full jar experience!
+[*][b]Addons without main mod:[/b] Work fine independently
+[*][b]VanillaJarFix:[/b] Fully compatible - dynamic detection respects its changes
+[/list]

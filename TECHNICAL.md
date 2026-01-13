@@ -4,12 +4,20 @@
 
 This mod plays an audio cue when drinking a jarred beverage results in the glass jar breaking (not being returned to inventory). The game has a configurable "Jar Return Percentage" setting (0-100%) but provides no audio feedback when jars break vs. are returned.
 
+**Target Version:** 7 Days to Die V1.1 (b14)
+
 ## Architecture
 
-### Single-File Design
-The entire mod is contained in `Harmony_ItemActionEat.cs`:
-- `AudibleBreakingGlassJars` class - Mod initialization and config loading (implements `IModApi`)
-- `ItemActionEat_Patches` class - Harmony patches for jar break detection
+### Multi-Project Design
+The project now contains three separate builds:
+
+| Project File | Output DLL | Purpose |
+|--------------|------------|---------|
+| `AudibleBreakingGlassJars.csproj` | `AudibleBreakingGlassJars.dll` | Main mod - glass breaking sound |
+| `BrokenGlassFromBrokenJars.csproj` | `BrokenGlassFromBrokenJars.dll` | Addon - gives broken glass |
+| `JarReturnOnCraft.csproj` | `JarReturnOnCraft.dll` | Addon - fixes crafting exploit |
+
+Each addon is fully independent and can be used without the main mod.
 
 ### Dependencies
 - **0Harmony.dll** - Harmony 2.x patching library (provided by TFP_Harmony mod)
@@ -270,19 +278,35 @@ When `<DebugMode>true</DebugMode>` is set, the mod logs detailed information:
 
 ```
 AudibleBreakingGlassJars/
-├── Harmony_ItemActionEat.cs    # All mod code
-├── AudibleBreakingGlassJars.csproj
-├── TECHNICAL.md                # This document
+├── AudibleBreakingGlassJars.csproj        # Main mod
+├── BrokenGlassFromBrokenJars.csproj       # Addon
+├── JarReturnOnCraft.csproj                # Addon
+├── src/
+│   ├── AudibleBreakingGlassJars/
+│   │   └── Harmony_ItemActionEat.cs       # Sound on jar break
+│   ├── BrokenGlassFromBrokenJars/
+│   │   └── BrokenGlassFromBrokenJars.cs   # Give broken glass
+│   └── JarReturnOnCraft/
+│       ├── JarReturnOnCraft.cs            # Detection logic + config
+│       ├── Patch_ReturnJarOnCraftStart.cs # Postfix on craft start
+│       └── Patch_SkipJarContentOnCancel.cs # Prefix replaces cancel
+├── TECHNICAL.md                           # This document
+├── docs/
+│   └── JAR_RETURN_ON_CRAFT_RESEARCH.md    # Original research notes
 ├── .gitignore
 └── Release/
-    └── AudibleBreakingGlassJars/
-        ├── AudibleBreakingGlassJars.dll
+    ├── AudibleBreakingGlassJars/
+    │   ├── AudibleBreakingGlassJars.dll
+    │   ├── ModInfo.xml
+    │   ├── Config/config.xml
+    │   └── Sounds/glass-shatter.ogg
+    ├── AudibleBreakingGlassJars_Addon_BrokenGlass/
+    │   ├── BrokenGlassFromBrokenJars.dll
+    │   └── ModInfo.xml
+    └── AudibleBreakingGlassJars_Addon_JarReturn/
+        ├── JarReturnOnCraft.dll
         ├── ModInfo.xml
-        ├── Config/
-        │   ├── config.xml      # User configuration
-        │   └── sounds.xml      # Registers custom sound with game
-        └── Sounds/
-            └── glass-shatter.ogg  # Custom glass breaking sound
+        └── Config/JarContents.xml         # Optional overrides
 ```
 
 ## Compatibility
@@ -313,10 +337,131 @@ The build also creates `Release/AudibleBreakingGlassJars.zip` for distribution.
 
 ## Version History
 
-- **1.0.0** - Initial release
+- **1.0.0** - AudibleBreakingGlassJars
   - Jar break detection via count comparison
   - Configurable sound name
   - Debug logging mode
   - Custom `glass-shatter.ogg` sound included (royalty-free)
   - Fixed: Use 5-parameter `PlayInsidePlayerHead` overload (2-param silently fails)
   - Fixed: Delay jar count check by one frame (inventory update is async)
+
+- **0.1.0 Beta** - BrokenGlassFromBrokenJars
+  - Initial release
+  - Gives broken glass (`resourceBrokenGlass`) when jars break
+  - Independent operation
+
+- **0.1.0 Beta** - JarReturnOnCraft
+  - Initial release
+  - Returns empty jar when crafting starts
+  - Skips jar content refund on cancel
+  - Dynamic jar detection + XML config
+  - Jar-to-jar recipe exception handling
+
+---
+
+# Addon: JarReturnOnCraft - Technical Details
+
+## Problem Statement
+
+Vanilla 7D2D has a crafting exploit with jar contents:
+
+1. Player has 1 jar of water, no empty jars
+2. Start crafting tea (uses water)
+3. Immediately cancel the crafting job
+4. Player gets the water back (standard cancel refund)
+5. But player ALSO keeps the jar from the water → **free jar duplication**
+
+This happens because:
+- The `UseJarRefund` system is designed for *consumption*, not crafting
+- Crafting cancel logic refunds ALL ingredients at 100%
+- The jar "inside" the water was never supposed to be a separate item
+
+## Solution Architecture
+
+### Two-Patch Design
+
+**Patch 1: ReturnJarOnCraftStart** (Postfix on `ItemActionEntryCraft.OnActivated`)
+- Triggers when a craft job is added to the queue
+- Detects jar content items in recipe ingredients
+- Immediately returns empty jar to player inventory
+- Exception: If recipe OUTPUT is also jar-based, skip (vanilla behavior)
+
+**Patch 2: SkipJarContentOnCancel** (Prefix on `XUiC_RecipeStack.HandleOnPress`)
+- Completely replaces cancel logic
+- Iterates through recipe ingredients
+- Skips refunding any jar content items
+- Still refunds all non-jar ingredients normally
+
+### Detection Logic
+
+```csharp
+public static bool IsJarContent(string itemName, out string jarItem)
+{
+    // 1. Check XML config overrides first
+    if (_configItems.TryGetValue(itemName, out jarItem))
+        return true;
+    
+    // 2. Dynamic detection via ItemActionEat properties
+    ItemClass itemClass = ItemClass.GetItemClass(itemName);
+    foreach (ItemAction action in itemClass.Actions)
+    {
+        if (action is ItemActionEat eatAction &&
+            eatAction.UseJarRefund &&           // Has jar refund flag
+            !string.IsNullOrEmpty(eatAction.CreateItem))  // Creates a jar item
+        {
+            jarItem = eatAction.CreateItem;
+            return true;
+        }
+    }
+    return false;
+}
+```
+
+**Key detection criteria:**
+- `ItemActionEat.UseJarRefund == true` - Item respects jar refund percentage
+- `ItemActionEat.CreateItem != null` - Item creates something when consumed (the jar)
+
+### Jar-to-Jar Recipe Exception
+
+Some recipes convert one jar drink to another:
+- `drinkJarBoiledWater` → `drinkJarGoldenrodTea`
+- `drinkJarRiverWater` → `drinkJarBoiledWater`
+
+In these cases, the jar stays with the liquid throughout - no jar should be returned at craft start, and vanilla cancel behavior is correct.
+
+```csharp
+public static bool RecipeOutputIsJarBased(Recipe recipe)
+{
+    string outputName = recipe.GetOutputItemClass()?.GetItemName();
+    if (string.IsNullOrEmpty(outputName))
+        return false;
+    
+    // Use same detection logic on the output
+    return IsJarContent(outputName, out _);
+}
+```
+
+### Configuration File
+
+Optional XML config at `Config/JarContents.xml`:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<JarContents>
+    <!-- Manual overrides for modded items -->
+    <Item name="myModdedWater" jarItem="drinkJarEmpty" />
+    <Item name="customBeverage" jarItem="modJarItem" />
+</JarContents>
+```
+
+Config items are loaded first and take precedence over dynamic detection.
+
+### VanillaJarFix Compatibility
+
+[VanillaJarFix](https://www.nexusmods.com/7daystodie/mods/9353) removes `UseJarRefund="true"` from vanilla items via XML patches. This makes our dynamic detection automatically skip those items:
+
+- VanillaJarFix removes `UseJarRefund` → `eatAction.UseJarRefund` is false
+- Our `IsJarContent()` returns false → vanilla behavior used
+- No conflict, both mods work together correctly
+
+---

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    JarReturnOnCraft - Manual Jar Content Overrides
+    
+    This config is OPTIONAL. The mod automatically detects vanilla jar items
+    by checking if they have UseJarRefund=true and Create_item set.
+    
+    Use this file to:
+    - Add modded items that don't follow vanilla patterns
+    - Override detection for specific items
+    - Support mods that use custom jar types
+    
+    Format:
+    <item name="itemName" jar="jarItemToReturn" />
+    
+    If "jar" is omitted, defaults to "drinkJarEmpty"
+-->
+<JarContents>
+    <!-- Example entries (uncomment to use):
+    
+    <item name="moddedDrinkInJar" jar="drinkJarEmpty" />
+    <item name="customPotion" jar="drinkJarEmpty" />
+    
+    For mods with custom jar types:
+    <item name="moddedDrinkInBottle" jar="moddedEmptyBottle" />
+    
+    -->
+</JarContents>
