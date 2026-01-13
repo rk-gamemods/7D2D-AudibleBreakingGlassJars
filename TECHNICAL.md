@@ -454,7 +454,7 @@ Optional XML config at `Config/JarContents.xml`:
 </JarContents>
 ```
 
-Config items are loaded first and take precedence over dynamic detection.
+Config is **supplemental** - it only affects items explicitly listed. All other items still use dynamic detection. If an item appears in both config AND has `UseJarRefund`, the config value is used for that specific item.
 
 ### VanillaJarFix Compatibility
 
