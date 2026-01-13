@@ -452,15 +452,16 @@ Optional XML config at `Config/JarContents.xml`:
 
 Config is **supplemental** - it only affects items explicitly listed. All other items still use dynamic detection. If an item appears in both config AND has `UseJarRefund`, the config value is used for that specific item.
 
-### VanillaJarFix Interaction
+### VanillaJarFix - Complementary Mod
 
-[VanillaJarFix](https://www.nexusmods.com/7daystodie/mods/9353) solves the jar problem differently - it removes `UseJarRefund="true"` from drink items via XML patches, so jars always return when eating.
+[VanillaJarFix](https://www.nexusmods.com/7daystodie/mods/9353) fixes a vanilla data bug where many solid foods (cornbread, boiled meat, etc.) incorrectly have `UseJarRefund="true"`. These items shouldn't have jar properties at all.
 
-Since our mod detects jar contents by checking `UseJarRefund == true`:
-- Items modified by VanillaJarFix have `UseJarRefund` removed
-- Our `IsJarContent()` returns false for those items
-- Our mod does nothing for those items (vanilla behavior applies)
+Our addon and VanillaJarFix solve **different problems**:
+- **VanillaJarFix**: Removes jar properties from items that shouldn't have them (data fix)
+- **JarReturnOnCraft**: Changes when jars are freed for items that correctly have jar contents (behavior fix)
 
-**Result**: No conflicts, but the two mods solve the same problem differently. If VanillaJarFix is installed, our addon won't affect items it has modified. You don't need both.
+Together they make jar handling sensible:
+1. VanillaJarFix cleans up the bad data
+2. Our addon handles actual liquids correctly
 
 ---

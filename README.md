@@ -116,9 +116,9 @@ When you craft with jar contents (like water), vanilla keeps the jar "inside" th
 ### Installation
 Copy `AudibleBreakingGlassJars_Addon_JarReturn` folder to `Mods/`
 
-### Note: VanillaJarFix Compatibility
+### Recommended: VanillaJarFix
 
-[VanillaJarFix](https://www.nexusmods.com/7daystodie/mods/9353) solves the jar problem differently - it removes the jar refund flag from drinks so you always get jars back when eating. Since our mod uses that same flag to detect jar contents, items modified by VanillaJarFix won't trigger our addon. **You don't need both** - choose whichever approach you prefer.
+For best results, use with [VanillaJarFix](https://www.nexusmods.com/7daystodie/mods/9353). Vanilla has a data bug where many solid foods (cornbread, boiled meat, etc.) incorrectly have jar properties. VanillaJarFix removes those bad properties. Our addon then handles *actual* jar liquids correctly - freeing the jar when you pour, not when you eat. Together they make jar handling sensible.
 
 ### Configuration (Optional)
 
