@@ -156,7 +156,7 @@ These addons work independently - you can use any combination:
 [size=4][b]Addon: Broken Glass From Broken Jars[/b][/size]
 [i]v0.1.0 Beta[/i]
 
-When a glass jar breaks from drinking, you now receive 1x [b]Broken Glass[/b] (resourceBrokenGlass). Makes jar breakage less punishing and more realistic - the glass doesn't just vanish!
+When a glass jar breaks from drinking, you now receive 1x [b]Broken Glass[/b] (resourceBrokenGlass). Makes jar breakage more realistic - the glass doesn't just vanish!
 
 [b]Features:[/b]
 [list]
@@ -176,7 +176,7 @@ When a glass jar breaks from drinking, you now receive 1x [b]Broken Glass[/b] (r
 Fixes the "jar duplication exploit" in vanilla crafting. When you craft with jar contents (water, tea, etc.), the empty jar is returned [b]immediately[/b] when crafting starts - and [b]NOT refunded[/b] if you cancel.
 
 [b]The Problem:[/b]
-Vanilla 7D2D lets you start crafting tea, immediately cancel, and get your water back - but keep the jar that was "used" to make the water. This addon closes that loophole.
+When crafting recipes that consume jar contents (like using water in cooking), you're pouring the liquid out of the jar. But vanilla doesn't free the jar until crafting completes - so if you cancel, the liquid magically returns to its jar. This addon returns the empty jar when crafting starts (simulating pouring), and doesn't refund the liquid if you cancel.
 
 [b]Features:[/b]
 [list]

@@ -363,18 +363,18 @@ The build also creates `Release/AudibleBreakingGlassJars.zip` for distribution.
 
 ## Problem Statement
 
-Vanilla 7D2D has a crafting exploit with jar contents:
+Vanilla 7D2D has an inconsistency with jar contents in crafting:
 
 1. Player has 1 jar of water, no empty jars
-2. Start crafting tea (uses water)
+2. Start crafting a recipe that consumes the water (e.g., meat stew)
 3. Immediately cancel the crafting job
 4. Player gets the water back (standard cancel refund)
-5. But player ALSO keeps the jar from the water → **free jar duplication**
+5. The jar is still "inside" the water - nothing was freed
 
-This happens because:
-- The `UseJarRefund` system is designed for *consumption*, not crafting
-- Crafting cancel logic refunds ALL ingredients at 100%
-- The jar "inside" the water was never supposed to be a separate item
+This is inconsistent because:
+- Conceptually, you're "pouring" the liquid into the pot when crafting starts
+- The jar should be freed at that moment, not when crafting completes
+- If you cancel, the liquid is already poured - it shouldn't magically return to the jar
 
 ## Solution Architecture
 

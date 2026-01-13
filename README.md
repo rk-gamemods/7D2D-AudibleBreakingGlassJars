@@ -103,7 +103,7 @@ Copy `AudibleBreakingGlassJars_Addon_BrokenGlass` folder to `Mods/`
 Fixes the "jar duplication exploit" in vanilla crafting. When you craft with jar contents (water, tea, etc.), the empty jar is returned **immediately** when crafting starts - and **NOT refunded** if you cancel.
 
 ### The Problem
-Vanilla 7D2D lets you start crafting tea, immediately cancel, and get your water back - but keep the jar that was "used" to make the water. This addon closes that loophole.
+When crafting recipes that consume jar contents (like using water in cooking), you're pouring the liquid out of the jar. But vanilla doesn't free the jar until crafting completes - so if you cancel, the liquid magically returns to its jar. This addon returns the empty jar when crafting starts (simulating pouring), and doesn't refund the liquid if you cancel.
 
 ### Features
 - Returns empty jar when craft job starts (not when complete)
