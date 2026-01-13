@@ -117,15 +117,11 @@ This mod should work well with other mods because:
 
 [size=4][b]Multiplayer[/b][/size]
 
-[b]Not tested.[/b] Based on how the mod works:
+[b][color=#ff0000]Not tested - use at your own risk.[/color][/b]
 
-[list]
-[*][b]Client-side only[/b] - Each player hears their own sounds locally
-[*][b]No server install needed[/b] - Only reads local inventory and plays audio
-[*][b]Custom sounds[/b] - May work; built-in game sounds should be fine
-[/list]
+All mods use standard game inventory APIs and only run on the local client. We expect them to work client-side only (no server install needed), but we can't guarantee it.
 
-If you test this in multiplayer, please share your results!
+[b]If you try these in multiplayer, please report your results![/b] The addons are optional partly for this reason - more testing needed.
 
 [line]
 
@@ -176,7 +172,7 @@ When a glass jar breaks from drinking, you now receive 1x [b]Broken Glass[/b] (r
 Changes when jars are freed during crafting. When you craft with jar contents (water, etc.), the empty jar is returned [b]immediately[/b] when crafting starts - and the liquid is [b]NOT refunded[/b] if you cancel.
 
 [b]The Problem:[/b]
-When you craft with jar contents (like water), vanilla keeps the jar "inside" the crafted food. You might get it back when you [i]eat[/i] the food (based on jar return %). That's weird - why would eating meat stew give you an empty jar? This addon frees the jar at the sensible moment: when you pour the liquid to start cooking.
+When you craft with jar contents (like water), vanilla keeps the jar "inside" the crafted food. You might get it back when you [i]eat[/i] the food (based on jar return %). That's weird - why would eating cornbread give you an empty jar? This addon frees the jar when you pour the liquid to start cooking. When cancelling the craft, no jar ingredients are returned and the liquid component is lost.
 
 [b]Features:[/b]
 [list]
@@ -184,7 +180,7 @@ When you craft with jar contents (like water), vanilla keeps the jar "inside" th
 [*]Canceling does NOT refund jar contents (water, tea, etc.)
 [*]Smart detection: only affects jar-content recipes
 [*]Exception: jar-to-jar recipes (water→tea) use vanilla behavior
-[*]Dynamic detection works with modded jar items
+[*]Dynamic detection works with modded jar items with the correct properties
 [*]Optional XML config for manual item overrides
 [/list]
 
