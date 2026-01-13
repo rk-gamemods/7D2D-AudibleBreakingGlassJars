@@ -83,13 +83,12 @@ The custom sound is the default because the game's glass sound is designed for b
 
 **v0.1.0 Beta**
 
-When a glass jar breaks from drinking, you receive 1x **Broken Glass** (`resourceBrokenGlass`). Makes jar breakage less punishing and more realistic!
+When a jar breaks from drinking, you get 1x **Broken Glass** instead of nothing.
 
 ### Features
 - Gives 1 broken glass when jars break from drinking
 - Tries backpack first, then toolbelt, then drops on ground
-- Uses same detection as main mod (respects jar return %)
-- Fully independent - works without main mod installed
+- Works with or without the main sound mod
 
 ### Installation
 Copy `AudibleBreakingGlassJars_Addon_BrokenGlass` folder to `Mods/`
@@ -100,37 +99,30 @@ Copy `AudibleBreakingGlassJars_Addon_BrokenGlass` folder to `Mods/`
 
 **v0.1.0 Beta**
 
-Changes when jars are freed during crafting. When you craft with jar contents (water, etc.), the empty jar is returned **immediately** when crafting starts - and the liquid is **NOT refunded** if you cancel.
-
-### The Problem
-When you craft with jar contents (like water), vanilla keeps the jar "inside" the crafted food. You might get it back when you *eat* the food (based on jar return %). That's weird - why would eating meat stew give you an empty jar? This addon frees the jar at the sensible moment: when you pour the liquid to start cooking.
+When you craft with water, you get the empty jar back right away instead of it staying inside the food.
 
 ### Features
-- Returns empty jar when craft job starts (not when complete)
-- Canceling does NOT refund jar contents (water, tea, etc.)
-- Smart detection: only affects jar-content recipes
+- Returns empty jar when craft job starts
+- Canceling does NOT refund the liquid (you already got the jar)
 - Exception: jar-to-jar recipes (water→tea) use vanilla behavior
-- Dynamic detection works with modded jar items
-- Optional XML config for manual item overrides
+- Works with or without the main sound mod
 
 ### Installation
 Copy `AudibleBreakingGlassJars_Addon_JarReturn` folder to `Mods/`
 
 ### Recommended: VanillaJarFix
 
-For best results, use with [VanillaJarFix](https://www.nexusmods.com/7daystodie/mods/9353). Vanilla has a data bug where many solid foods (cornbread, boiled meat, etc.) incorrectly have jar properties. VanillaJarFix removes those bad properties. Our addon then handles *actual* jar liquids correctly - freeing the jar when you pour, not when you eat. Together they make jar handling sensible.
+Use with [VanillaJarFix](https://www.nexusmods.com/7daystodie/mods/9353) which removes incorrect jar properties from solid foods like cornbread and boiled meat.
 
-### Configuration (Optional)
+---
 
-The addon auto-detects jar content items at runtime. For manual overrides, edit `Config/JarContents.xml`:
+## Testing & Multiplayer
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<JarContents>
-    <!-- Add custom jar content items here -->
-    <Item name="myModdedWater" jarItem="drinkJarEmpty" />
-</JarContents>
-```
+**Addons are partially tested** for basic functionality with a few recipes. Please report any edge cases or recipes that don't work correctly.
+
+**Multiplayer:** Not tested, but expected to work client-side only (no server install needed). All operations stay within player inventory using standard game APIs. No direct manipulation of workstation outputs or shared containers. Please report your results.
+
+**EAC must be disabled** for all DLL mods.
 
 ---
 
