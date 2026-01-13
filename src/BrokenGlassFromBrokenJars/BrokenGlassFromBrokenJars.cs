@@ -61,6 +61,7 @@ public class BrokenGlassFromBrokenJars : IModApi
             if (player.bag.CanStack(brokenGlassStack))
             {
                 player.bag.AddItem(brokenGlassStack);
+                player.AddUIHarvestingItem(brokenGlassStack);
                 if (DebugMode)
                     Debug.Log($"{LOG_PREFIX} Added {BrokenGlassCount}x {BROKEN_GLASS_ITEM} to backpack");
                 return;
@@ -70,6 +71,7 @@ public class BrokenGlassFromBrokenJars : IModApi
             if (player.inventory.CanStack(brokenGlassStack))
             {
                 player.inventory.AddItem(brokenGlassStack);
+                player.AddUIHarvestingItem(brokenGlassStack);
                 if (DebugMode)
                     Debug.Log($"{LOG_PREFIX} Added {BrokenGlassCount}x {BROKEN_GLASS_ITEM} to toolbelt");
                 return;
@@ -82,6 +84,9 @@ public class BrokenGlassFromBrokenJars : IModApi
                 Vector3.zero,
                 player.entityId,
                 120f);
+            
+            // Show tooltip that item was dropped
+            GameManager.ShowTooltip(player, Localization.Get("xuiInventoryFullDropping"));
                 
             if (DebugMode)
                 Debug.Log($"{LOG_PREFIX} Inventory full - dropped {BrokenGlassCount}x {BROKEN_GLASS_ITEM} on ground");
