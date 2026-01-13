@@ -363,18 +363,14 @@ The build also creates `Release/AudibleBreakingGlassJars.zip` for distribution.
 
 ## Problem Statement
 
-Vanilla 7D2D has an inconsistency with jar contents in crafting:
+Vanilla 7D2D has weird jar handling when crafting with jar contents:
 
-1. Player has 1 jar of water, no empty jars
-2. Start crafting a recipe that consumes the water (e.g., meat stew)
-3. Immediately cancel the crafting job
-4. Player gets the water back (standard cancel refund)
-5. The jar is still "inside" the water - nothing was freed
+1. Player crafts meat stew using bottled water
+2. The jar stays "inside" the crafted food item
+3. When player EATS the stew, they might get a jar back (jar return %)
+4. This makes no sense - why would eating stew produce an empty jar?
 
-This is inconsistent because:
-- Conceptually, you're "pouring" the liquid into the pot when crafting starts
-- The jar should be freed at that moment, not when crafting completes
-- If you cancel, the liquid is already poured - it shouldn't magically return to the jar
+The jar should be freed when you pour the liquid into the pot, not when you eat the finished food.
 
 ## Solution Architecture
 
