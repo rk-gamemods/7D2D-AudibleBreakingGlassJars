@@ -4,6 +4,6 @@
     <DisplayName value="Jar Return On Craft" />
     <Description value="Addon for AudibleBreakingGlassJars. When crafting with jar contents (bottled water, beer, honey, etc.), the empty jar is returned immediately - simulating pouring the contents into the pot. If the job is cancelled, jar content ingredients are NOT refunded since you already received the empty jar. Recipes that output jar-based drinks (water→tea) use vanilla behavior. RECOMMENDED: Use with VanillaJarFix mod to correct vanilla bugs where solid foods incorrectly have jar properties." />
     <Author value="TumblingBore" />
-    <Version value="1.0.0" />
+    <Version value="0.1.0-beta" />
     <Website value="" />
 </xml>

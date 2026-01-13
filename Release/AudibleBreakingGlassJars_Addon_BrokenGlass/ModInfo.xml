@@ -4,6 +4,6 @@
     <DisplayName value="Broken Glass From Broken Jars" />
     <Description value="Addon for AudibleBreakingGlassJars. When glass jars break from drinking, receive broken glass (resourceBrokenGlass) as salvage. Drops on ground if inventory is full." />
     <Author value="TumblingBore" />
-    <Version value="1.0.0" />
+    <Version value="0.1.0-beta" />
     <Website value="" />
 </xml>
