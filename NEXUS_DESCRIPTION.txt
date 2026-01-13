@@ -2,7 +2,7 @@
 BRIEF OVERVIEW (350 character limit)
 ================================================================================
 
-Adds a glass breaking sound when drinking from jars causes the jar to break. Now you'll hear when you lose a jar! Includes optional addons: get broken glass from broken jars, and fix the jar return exploit in crafting.
+Adds a glass breaking sound when drinking from jars causes the jar to break. Now you'll hear when you lose a jar! Includes optional addons: get broken glass from broken jars, and return jars immediately when crafting.
 
 Character count: 238
 
@@ -173,7 +173,7 @@ When a glass jar breaks from drinking, you now receive 1x [b]Broken Glass[/b] (r
 [size=4][b]Addon: Jar Return On Craft[/b][/size]
 [i]v0.1.0 Beta[/i]
 
-Fixes the "jar duplication exploit" in vanilla crafting. When you craft with jar contents (water, tea, etc.), the empty jar is returned [b]immediately[/b] when crafting starts - and [b]NOT refunded[/b] if you cancel.
+Changes when jars are freed during crafting. When you craft with jar contents (water, etc.), the empty jar is returned [b]immediately[/b] when crafting starts - and the liquid is [b]NOT refunded[/b] if you cancel.
 
 [b]The Problem:[/b]
 When you craft with jar contents (like water), vanilla keeps the jar "inside" the crafted food. You might get it back when you [i]eat[/i] the food (based on jar return %). That's weird - why would eating meat stew give you an empty jar? This addon frees the jar at the sensible moment: when you pour the liquid to start cooking.
@@ -190,9 +190,9 @@ When you craft with jar contents (like water), vanilla keeps the jar "inside" th
 
 [b]Installation:[/b] Copy [b]AudibleBreakingGlassJars_Addon_JarReturn[/b] folder to Mods/
 
-[size=3][color=#ff6600][b]⚠️ Highly Recommended: VanillaJarFix[/b][/color][/size]
+[size=3][color=#ff6600][b]⚠️ Note: VanillaJarFix Compatibility[/b][/color][/size]
 
-For a complete jar economy fix, we recommend also using [url=https://www.nexusmods.com/7daystodie/mods/9353]VanillaJarFix[/url]. It removes jar refunds from recipes entirely (at the XML level), so you always get jars back. Our addon is fully compatible with VanillaJarFix - if VanillaJarFix removes the jar refund property, our mod automatically respects that.
+[url=https://www.nexusmods.com/7daystodie/mods/9353]VanillaJarFix[/url] solves the jar problem differently - it removes the jar refund flag from drinks so you always get jars back when eating. Since our mod uses that same flag to detect jar contents, items modified by VanillaJarFix won't trigger our addon. [b]You don't need both[/b] - choose whichever approach you prefer.
 
 [line]
 
@@ -203,5 +203,5 @@ For a complete jar economy fix, we recommend also using [url=https://www.nexusmo
 [*][b]Main mod + JarReturn:[/b] Sound plays when drinking; jars returned on craft
 [*][b]All three together:[/b] Full jar experience!
 [*][b]Addons without main mod:[/b] Work fine independently
-[*][b]VanillaJarFix:[/b] Fully compatible - dynamic detection respects its changes
+[*][b]VanillaJarFix:[/b] No conflicts, but our JarReturn addon won't affect items that VanillaJarFix has modified (they use the same detection flag)
 [/list]

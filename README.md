@@ -8,7 +8,7 @@ A 7 Days to Die mod that adds audio feedback when drinking from glass jars cause
 
 - **[Main Mod](https://github.com/rk-gamemods/7D2D-AudibleBreakingGlassJars/raw/master/Release/AudibleBreakingGlassJars-1.0.0.zip)** - Glass breaking sound
 - **[Addon: Broken Glass](https://github.com/rk-gamemods/7D2D-AudibleBreakingGlassJars/raw/master/Release/AudibleBreakingGlassJars_Addon_BrokenGlass-0.1.0-beta.zip)** - Get broken glass from broken jars
-- **[Addon: Jar Return](https://github.com/rk-gamemods/7D2D-AudibleBreakingGlassJars/raw/master/Release/AudibleBreakingGlassJars_Addon_JarReturn-0.1.0-beta.zip)** - Fix jar duplication exploit in crafting
+- **[Addon: Jar Return](https://github.com/rk-gamemods/7D2D-AudibleBreakingGlassJars/raw/master/Release/AudibleBreakingGlassJars_Addon_JarReturn-0.1.0-beta.zip)** - Return jars when crafting starts
 
 ## The Problem
 
@@ -100,7 +100,7 @@ Copy `AudibleBreakingGlassJars_Addon_BrokenGlass` folder to `Mods/`
 
 **v0.1.0 Beta**
 
-Fixes the "jar duplication exploit" in vanilla crafting. When you craft with jar contents (water, tea, etc.), the empty jar is returned **immediately** when crafting starts - and **NOT refunded** if you cancel.
+Changes when jars are freed during crafting. When you craft with jar contents (water, etc.), the empty jar is returned **immediately** when crafting starts - and the liquid is **NOT refunded** if you cancel.
 
 ### The Problem
 When you craft with jar contents (like water), vanilla keeps the jar "inside" the crafted food. You might get it back when you *eat* the food (based on jar return %). That's weird - why would eating meat stew give you an empty jar? This addon frees the jar at the sensible moment: when you pour the liquid to start cooking.
@@ -116,9 +116,9 @@ When you craft with jar contents (like water), vanilla keeps the jar "inside" th
 ### Installation
 Copy `AudibleBreakingGlassJars_Addon_JarReturn` folder to `Mods/`
 
-### ⚠️ Highly Recommended: VanillaJarFix
+### Note: VanillaJarFix Compatibility
 
-For a complete jar economy fix, we recommend also using [VanillaJarFix](https://www.nexusmods.com/7daystodie/mods/9353). It removes jar refunds from recipes entirely (at the XML level), so you always get jars back. This addon is fully compatible with VanillaJarFix - if VanillaJarFix removes the jar refund property, this mod automatically respects that.
+[VanillaJarFix](https://www.nexusmods.com/7daystodie/mods/9353) solves the jar problem differently - it removes the jar refund flag from drinks so you always get jars back when eating. Since our mod uses that same flag to detect jar contents, items modified by VanillaJarFix won't trigger our addon. **You don't need both** - choose whichever approach you prefer.
 
 ### Configuration (Optional)
 
