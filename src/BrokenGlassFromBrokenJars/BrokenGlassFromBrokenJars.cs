@@ -132,10 +132,21 @@ public static class BrokenGlass_ItemActionEat_Patches
             _player = player;
             _createItemName = __instance.CreateItem;
             _jarCountBefore = CountItem(player, _createItemName);
-            _groundCountBefore = CountGroundItems(player, _createItemName);
 
-            if (BrokenGlassFromBrokenJars.DebugMode)
-                Debug.Log($"[BrokenGlass-Debug] TRACKING: '{_createItemName}' inv={_jarCountBefore}, ground={_groundCountBefore}");
+            // Only capture ground count if inventory is full (optimization)
+            // -1 means "don't check ground" because there's inventory space
+            if (CanInventoryAcceptJar(player, _createItemName))
+            {
+                _groundCountBefore = -1;
+                if (BrokenGlassFromBrokenJars.DebugMode)
+                    Debug.Log($"[BrokenGlass-Debug] TRACKING: '{_createItemName}' inv={_jarCountBefore}, ground=skip (has space)");
+            }
+            else
+            {
+                _groundCountBefore = CountGroundItems(player, _createItemName);
+                if (BrokenGlassFromBrokenJars.DebugMode)
+                    Debug.Log($"[BrokenGlass-Debug] TRACKING: '{_createItemName}' inv={_jarCountBefore}, ground={_groundCountBefore} (inv full)");
+            }
         }
     }
 
@@ -179,27 +190,30 @@ public static class BrokenGlass_ItemActionEat_Patches
             yield break;
 
         int invCountAfter = CountItem(player, itemName);
-        int groundCountAfter = CountGroundItems(player, itemName);
 
         // If inventory count increased, jar was returned to bag/toolbelt
         if (invCountAfter > invCountBefore)
         {
             if (BrokenGlassFromBrokenJars.DebugMode)
-                Debug.Log($"[BrokenGlass-Debug] Jar returned to inventory (inv increased)");
+                Debug.Log($"[BrokenGlass-Debug] CHECK '{itemName}': inv {invCountBefore}->{invCountAfter} - Jar returned");
             yield break;
         }
 
-        // If ground count increased, jar was dropped (inventory full scenario)
-        if (groundCountAfter > groundCountBefore)
+        // Only check ground if we captured groundCountBefore (inventory was full)
+        if (groundCountBefore >= 0)
         {
-            if (BrokenGlassFromBrokenJars.DebugMode)
-                Debug.Log($"[BrokenGlass-Debug] Jar dropped on ground (ground count increased)");
-            yield break;
+            int groundCountAfter = CountGroundItems(player, itemName);
+            if (groundCountAfter > groundCountBefore)
+            {
+                if (BrokenGlassFromBrokenJars.DebugMode)
+                    Debug.Log($"[BrokenGlass-Debug] CHECK '{itemName}': ground {groundCountBefore}->{groundCountAfter} - Jar dropped");
+                yield break;
+            }
         }
 
         // Neither inventory nor ground count increased = jar broke - give broken glass
         if (BrokenGlassFromBrokenJars.DebugMode)
-            Debug.Log($"[BrokenGlass-Debug] JAR BROKE! (inv and ground counts unchanged) Giving broken glass...");
+            Debug.Log($"[BrokenGlass-Debug] JAR BROKE! Giving broken glass...");
         BrokenGlassFromBrokenJars.GiveBrokenGlass(player);
     }
 
@@ -223,7 +237,9 @@ public static class BrokenGlass_ItemActionEat_Patches
             _player = player;
             _createItemName = __instance.CreateItem;
             _jarCountBefore = CountItem(player, _createItemName);
-            _groundCountBefore = CountGroundItems(player, _createItemName);
+
+            // Only capture ground count if inventory is full (optimization)
+            _groundCountBefore = CanInventoryAcceptJar(player, _createItemName) ? -1 : CountGroundItems(player, _createItemName);
         }
     }
 
@@ -275,6 +291,27 @@ public static class BrokenGlass_ItemActionEat_Patches
         catch
         {
             return 0;
+        }
+    }
+
+    /// <summary>
+    /// Checks if the player's inventory (bag or toolbelt) can accept the jar item.
+    /// Used to determine if ground check is needed (only when inventory is full).
+    /// </summary>
+    private static bool CanInventoryAcceptJar(EntityPlayerLocal player, string itemName)
+    {
+        try
+        {
+            var jarValue = ItemClass.GetItem(itemName);
+            if (jarValue.IsEmpty())
+                return true; // Can't check, assume has space
+
+            var jarStack = new ItemStack(jarValue, 1);
+            return player.bag.CanStack(jarStack) || player.inventory.CanStack(jarStack);
+        }
+        catch
+        {
+            return true; // On error, assume has space (skip ground check)
         }
     }
 

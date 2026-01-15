@@ -269,9 +269,21 @@ public static class ItemActionEat_Patches
             _player = player;
             _createItemName = __instance.CreateItem;
             _jarCountBefore = CountItem(player, _createItemName);
-            _groundCountBefore = CountGroundItems(player, _createItemName);
-            if (AudibleBreakingGlassJars.DebugMode)
-                Debug.Log($"[ABGJ-Debug] TRACKING: '{_createItemName}' inventory={_jarCountBefore}, ground={_groundCountBefore}");
+
+            // Only capture ground count if inventory is full (optimization)
+            // -1 means "don't check ground" because there's inventory space
+            if (CanInventoryAcceptJar(player, _createItemName))
+            {
+                _groundCountBefore = -1;
+                if (AudibleBreakingGlassJars.DebugMode)
+                    Debug.Log($"[ABGJ-Debug] TRACKING: '{_createItemName}' inventory={_jarCountBefore}, ground=skip (has space)");
+            }
+            else
+            {
+                _groundCountBefore = CountGroundItems(player, _createItemName);
+                if (AudibleBreakingGlassJars.DebugMode)
+                    Debug.Log($"[ABGJ-Debug] TRACKING: '{_createItemName}' inventory={_jarCountBefore}, ground={_groundCountBefore} (inv full)");
+            }
         }
         else
         {
@@ -335,26 +347,32 @@ public static class ItemActionEat_Patches
         }
 
         int invCountAfter = CountItem(player, itemName);
-        int groundCountAfter = CountGroundItems(player, itemName);
         float elapsed = Time.time - startTime;
-
-        if (AudibleBreakingGlassJars.DebugMode)
-            Debug.Log($"[ABGJ-Debug] CheckJarAfterDelay - CHECK '{itemName}': inv {invCountBefore}->{invCountAfter}, ground {groundCountBefore}->{groundCountAfter} (elapsed={elapsed:F3}s)");
 
         // If inventory count increased, jar was returned to bag/toolbelt
         if (invCountAfter > invCountBefore)
         {
             if (AudibleBreakingGlassJars.DebugMode)
-                Debug.Log($"[ABGJ-Debug] Jar returned to inventory (inv increased, no sound)");
+                Debug.Log($"[ABGJ-Debug] CHECK '{itemName}': inv {invCountBefore}->{invCountAfter} - Jar returned (no sound) [{elapsed:F3}s]");
             yield break;
         }
 
-        // If ground count increased, jar was dropped (inventory full scenario)
-        if (groundCountAfter > groundCountBefore)
+        // Only check ground if we captured groundCountBefore (inventory was full)
+        if (groundCountBefore >= 0)
         {
+            int groundCountAfter = CountGroundItems(player, itemName);
+            if (groundCountAfter > groundCountBefore)
+            {
+                if (AudibleBreakingGlassJars.DebugMode)
+                    Debug.Log($"[ABGJ-Debug] CHECK '{itemName}': ground {groundCountBefore}->{groundCountAfter} - Jar dropped (no sound) [{elapsed:F3}s]");
+                yield break;
+            }
             if (AudibleBreakingGlassJars.DebugMode)
-                Debug.Log($"[ABGJ-Debug] Jar dropped on ground (ground count increased, no sound)");
-            yield break;
+                Debug.Log($"[ABGJ-Debug] CHECK '{itemName}': inv {invCountBefore}->{invCountAfter}, ground {groundCountBefore}->{groundCountAfter} [{elapsed:F3}s]");
+        }
+        else if (AudibleBreakingGlassJars.DebugMode)
+        {
+            Debug.Log($"[ABGJ-Debug] CHECK '{itemName}': inv {invCountBefore}->{invCountAfter} (ground skip) [{elapsed:F3}s]");
         }
 
         // Neither inventory nor ground count increased = jar broke
@@ -382,7 +400,9 @@ public static class ItemActionEat_Patches
             _player = player;
             _createItemName = __instance.CreateItem;
             _jarCountBefore = CountItem(player, _createItemName);
-            _groundCountBefore = CountGroundItems(player, _createItemName);
+
+            // Only capture ground count if inventory is full (optimization)
+            _groundCountBefore = CanInventoryAcceptJar(player, _createItemName) ? -1 : CountGroundItems(player, _createItemName);
         }
     }
 
@@ -436,6 +456,27 @@ public static class ItemActionEat_Patches
         catch
         {
             return 0;
+        }
+    }
+
+    /// <summary>
+    /// Checks if the player's inventory (bag or toolbelt) can accept the jar item.
+    /// Used to determine if ground check is needed (only when inventory is full).
+    /// </summary>
+    private static bool CanInventoryAcceptJar(EntityPlayerLocal player, string itemName)
+    {
+        try
+        {
+            var jarValue = ItemClass.GetItem(itemName);
+            if (jarValue.IsEmpty())
+                return true; // Can't check, assume has space
+
+            var jarStack = new ItemStack(jarValue, 1);
+            return player.bag.CanStack(jarStack) || player.inventory.CanStack(jarStack);
+        }
+        catch
+        {
+            return true; // On error, assume has space (skip ground check)
         }
     }
 
