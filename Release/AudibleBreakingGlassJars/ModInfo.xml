@@ -4,6 +4,6 @@
 	<DisplayName value="Audible Breaking Glass Jars" />
 	<Description value="Plays a glass breaking sound when drinking fluids causes the glass jar to break and not be returned to inventory. Works with the game's jar return percentage setting." />
 	<Author value="rk-gamemods" />
-	<Version value="1.0.0" />
+	<Version value="1.1.0" />
 	<Website value="" />
 </xml>

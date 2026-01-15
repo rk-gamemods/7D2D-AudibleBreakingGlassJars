@@ -76,7 +76,8 @@ public static class Patch_ReturnJarOnCraftStart
                     GameManager.ShowTooltip(player, Localization.Get("xuiInventoryFullDropping"));
                 }
                 
-                UnityEngine.Debug.Log($"[JarReturnOnCraft] Returned {jarCount}x {jarItemName} for crafting with {itemName}");
+                if (JarReturnOnCraft.DebugMode)
+                    UnityEngine.Debug.Log($"[JarReturnOnCraft] Returned {jarCount}x {jarItemName} for crafting with {itemName}");
             }
         }
     }

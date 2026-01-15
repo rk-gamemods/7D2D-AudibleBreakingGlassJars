@@ -6,9 +6,9 @@ A 7 Days to Die mod that adds audio feedback when drinking from glass jars cause
 
 ## ⬇️ Downloads
 
-- **[Main Mod](https://github.com/rk-gamemods/7D2D-AudibleBreakingGlassJars/raw/master/Release/AudibleBreakingGlassJars-1.0.0.zip)** - Glass breaking sound
-- **[Addon: Broken Glass](https://github.com/rk-gamemods/7D2D-AudibleBreakingGlassJars/raw/master/Release/AudibleBreakingGlassJars_Addon_BrokenGlass-0.1.0-beta.zip)** - Get broken glass from broken jars
-- **[Addon: Jar Return](https://github.com/rk-gamemods/7D2D-AudibleBreakingGlassJars/raw/master/Release/AudibleBreakingGlassJars_Addon_JarReturn-0.1.0-beta.zip)** - Return jars when crafting starts
+- **[Main Mod](https://github.com/rk-gamemods/7D2D-AudibleBreakingGlassJars/raw/master/Release/AudibleBreakingGlassJars-1.1.0.zip)** - Glass breaking sound
+- **[Addon: Broken Glass](https://github.com/rk-gamemods/7D2D-AudibleBreakingGlassJars/raw/master/Release/AudibleBreakingGlassJars_Addon_BrokenGlass-0.2.0.zip)** - Get broken glass from broken jars
+- **[Addon: Jar Return](https://github.com/rk-gamemods/7D2D-AudibleBreakingGlassJars/raw/master/Release/AudibleBreakingGlassJars_Addon_JarReturn-0.1.1.zip)** - Return jars when crafting starts
 
 ## The Problem
 
@@ -81,7 +81,7 @@ The custom sound is the default because the game's glass sound is designed for b
 
 ## Addon: Broken Glass From Broken Jars
 
-**v0.1.0 Beta**
+**v0.2.0**
 
 When a jar breaks from drinking, you get 1x **Broken Glass** instead of nothing.
 
@@ -97,7 +97,7 @@ Copy `AudibleBreakingGlassJars_Addon_BrokenGlass` folder to `Mods/`
 
 ## Addon: Jar Return On Craft
 
-**v0.1.0 Beta**
+**v0.1.1**
 
 When you craft with water, you get the empty jar back right away instead of it staying inside the food.
 
@@ -203,23 +203,29 @@ AudibleBreakingGlassJars/
 
 ## Changelog
 
+### v1.1.0 - AudibleBreakingGlassJars
+- Fixed: Jar returned to toolbelt incorrectly triggered break sound (reported by DanColeman86)
+- Fixed: Jar dropped on ground (inventory full) incorrectly triggered break sound
+- Now checks bag, toolbelt, AND nearby ground drops before playing sound
+
 ### v1.0.0 - AudibleBreakingGlassJars
 - Jar break detection via item count comparison
 - Custom sound loading at runtime (OGG/WAV)
 - Fallback to game sounds if custom sound fails
 - Configurable sound name and debug mode
 
-### v0.1.0 Beta - BrokenGlassFromBrokenJars
-- Initial release
-- Gives broken glass when jars break from drinking
-- Independent operation (no main mod required)
+### v0.2.0 - BrokenGlassFromBrokenJars
+- Fixed: Jar returned to toolbelt incorrectly gave broken glass
+- Fixed: Jar dropped on ground (inventory full) incorrectly gave broken glass
+- Now checks bag, toolbelt, AND nearby ground drops
 
-### v0.1.0 Beta - JarReturnOnCraft
-- Initial release
-- Returns empty jar when crafting starts
-- Skips jar content refund on cancel
-- Dynamic jar detection + XML config support
-- Jar-to-jar recipe exception handling
+### v0.1.1 - JarReturnOnCraft
+- Added debug mode toggle (reduces log spam)
+- Jar return logs now only show when debug mode enabled
+
+### v0.1.0 - Addons Initial Release
+- BrokenGlassFromBrokenJars: Gives broken glass when jars break from drinking
+- JarReturnOnCraft: Returns empty jar when crafting starts, skips refund on cancel
 
 ## License
 

@@ -150,7 +150,7 @@ These addons work independently - you can use any combination:
 [line]
 
 [size=4][b]Addon: Broken Glass From Broken Jars[/b][/size]
-[i]v0.1.0 Beta[/i]
+[i]v0.2.0[/i]
 
 When a glass jar breaks from drinking, you now receive 1x [b]Broken Glass[/b] (resourceBrokenGlass). Makes jar breakage more realistic - the glass doesn't just vanish!
 
@@ -167,7 +167,7 @@ When a glass jar breaks from drinking, you now receive 1x [b]Broken Glass[/b] (r
 [line]
 
 [size=4][b]Addon: Jar Return On Craft[/b][/size]
-[i]v0.1.0 Beta[/i]
+[i]v0.1.1[/i]
 
 Changes when jars are freed during crafting. When you craft with jar contents (water, etc.), the empty jar is returned [b]immediately[/b] when crafting starts - and the liquid is [b]NOT refunded[/b] if you cancel.
 
@@ -200,4 +200,41 @@ For best results, use with [url=https://www.nexusmods.com/7daystodie/mods/9353]V
 [*][b]All three together:[/b] Full jar experience!
 [*][b]Addons without main mod:[/b] Work fine independently
 [*][b]VanillaJarFix:[/b] Complementary - it fixes bad data (solid foods with jar properties), our addon fixes behavior (when jars are freed for actual liquids)
+[/list]
+
+[line]
+
+[size=4][b]Changelog[/b][/size]
+
+[b]v1.1.0 - AudibleBreakingGlassJars[/b]
+[list]
+[*]Fixed: Jar returned to toolbelt incorrectly triggered break sound (reported by DanColeman86)
+[*]Fixed: Jar dropped on ground (inventory full) incorrectly triggered break sound
+[*]Now checks bag, toolbelt, AND nearby ground drops before playing sound
+[/list]
+
+[b]v1.0.0 - AudibleBreakingGlassJars[/b]
+[list]
+[*]Initial release
+[*]Jar break detection via item count comparison
+[*]Custom sound loading (OGG/WAV)
+[/list]
+
+[b]v0.2.0 - Broken Glass From Broken Jars[/b]
+[list]
+[*]Fixed: Jar returned to toolbelt incorrectly gave broken glass
+[*]Fixed: Jar dropped on ground (inventory full) incorrectly gave broken glass
+[*]Now checks bag, toolbelt, AND nearby ground drops
+[/list]
+
+[b]v0.1.1 - Jar Return On Craft[/b]
+[list]
+[*]Added debug mode toggle (reduces log spam)
+[*]Jar return logs now only show when debug mode enabled
+[/list]
+
+[b]v0.1.0 - Addons Initial Release[/b]
+[list]
+[*]Broken Glass From Broken Jars - gives broken glass when jars break
+[*]Jar Return On Craft - returns jars when crafting starts
 [/list]

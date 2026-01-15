@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using Audio;
@@ -307,7 +308,8 @@ public static class ItemActionEat_Patches
 
     /// <summary>
     /// Waits for inventory to update, then checks if jar was returned.
-    /// If jar count didn't increase, the jar broke and we play the sound.
+    /// Checks: 1) bag/toolbelt count increased, 2) jar dropped on ground nearby.
+    /// Only plays sound if jar truly broke (not in inventory AND not on ground).
     /// </summary>
     private static IEnumerator CheckJarAfterDelay(EntityPlayerLocal player, int countBefore, string itemName)
     {
@@ -334,18 +336,26 @@ public static class ItemActionEat_Patches
         if (AudibleBreakingGlassJars.DebugMode)
             Debug.Log($"[ABGJ-Debug] CheckJarAfterDelay - CHECK '{itemName}': before={countBefore}, after={countAfter} (elapsed={elapsed:F3}s)");
 
-        // If item count didn't increase, the jar broke
-        if (countAfter <= countBefore)
+        // If item count increased, jar was returned to inventory/toolbelt
+        if (countAfter > countBefore)
         {
             if (AudibleBreakingGlassJars.DebugMode)
-                Debug.Log($"[ABGJ-Debug] JAR BROKE! (after <= before) Playing sound...");
-            AudibleBreakingGlassJars.PlaySound(player);
+                Debug.Log($"[ABGJ-Debug] Jar returned to inventory (after > before, no sound)");
+            yield break;
         }
-        else
+
+        // Count didn't increase - check if jar was dropped on ground (inventory full scenario)
+        if (IsItemDroppedNearby(player, itemName))
         {
             if (AudibleBreakingGlassJars.DebugMode)
-                Debug.Log($"[ABGJ-Debug] Jar returned (after > before, no sound)");
+                Debug.Log($"[ABGJ-Debug] Jar dropped on ground (inventory full, no sound)");
+            yield break;
         }
+
+        // Jar not in inventory AND not on ground = jar broke
+        if (AudibleBreakingGlassJars.DebugMode)
+            Debug.Log($"[ABGJ-Debug] JAR BROKE! (not in inventory, not on ground) Playing sound...");
+        AudibleBreakingGlassJars.PlaySound(player);
     }
 
     #endregion
@@ -395,16 +405,81 @@ public static class ItemActionEat_Patches
 
     #region Helpers
 
+    /// <summary>
+    /// Range in blocks to check for dropped items on the ground.
+    /// Small radius since drops happen at player's feet.
+    /// </summary>
+    private const float GROUND_CHECK_RANGE = 5f;
+
+    /// <summary>
+    /// Reusable list for entity scanning to avoid allocations.
+    /// </summary>
+    private static readonly List<Entity> _entityScanList = new List<Entity>();
+
     private static int CountItem(EntityPlayerLocal player, string itemName)
     {
         try
         {
             var item = ItemClass.GetItem(itemName);
-            return player.bag.GetItemCount(item);
+            // Count in both bag (backpack) and inventory (toolbelt)
+            int bagCount = player.bag.GetItemCount(item);
+            int toolbeltCount = player.inventory.GetItemCount(item);
+            return bagCount + toolbeltCount;
         }
         catch
         {
             return 0;
+        }
+    }
+
+    /// <summary>
+    /// Checks if an item was dropped on the ground nearby (within GROUND_CHECK_RANGE blocks).
+    /// Used when inventory is full and jar couldn't be added to bag/toolbelt.
+    /// </summary>
+    private static bool IsItemDroppedNearby(EntityPlayerLocal player, string itemName)
+    {
+        try
+        {
+            World world = GameManager.Instance?.World;
+            if (world == null)
+                return false;
+
+            // Get the item type ID we're looking for
+            ItemValue searchItem = ItemClass.GetItem(itemName);
+            if (searchItem.IsEmpty())
+                return false;
+
+            int searchItemType = searchItem.type;
+
+            // Create bounds around player position
+            Vector3 playerPos = player.position;
+            Bounds bounds = new Bounds(playerPos, new Vector3(GROUND_CHECK_RANGE * 2, GROUND_CHECK_RANGE * 2, GROUND_CHECK_RANGE * 2));
+
+            // Scan for EntityItem (dropped items) in range
+            _entityScanList.Clear();
+            world.GetEntitiesInBounds(typeof(EntityItem), bounds, _entityScanList);
+
+            for (int i = 0; i < _entityScanList.Count; i++)
+            {
+                if (_entityScanList[i] is EntityItem droppedItem)
+                {
+                    // Check if this dropped item matches what we're looking for
+                    if (droppedItem.itemStack.itemValue.type == searchItemType)
+                    {
+                        if (AudibleBreakingGlassJars.DebugMode)
+                            Debug.Log($"[ABGJ-Debug] Found dropped {itemName} on ground at distance {Vector3.Distance(playerPos, droppedItem.position):F1}");
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+        catch (Exception ex)
+        {
+            if (AudibleBreakingGlassJars.DebugMode)
+                Debug.Log($"[ABGJ-Debug] Error checking ground drops: {ex.Message}");
+            return false;
         }
     }
 

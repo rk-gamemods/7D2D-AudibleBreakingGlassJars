@@ -36,6 +36,11 @@ public class JarReturnOnCraft : IModApi
     /// </summary>
     private static Dictionary<string, string> DynamicJarCache { get; set; }
 
+    /// <summary>
+    /// When true, logs jar returns to console. Reduces log noise when false.
+    /// </summary>
+    public static bool DebugMode = false;
+
     public void InitMod(Mod _modInstance)
     {
         ModInstance = _modInstance;

@@ -43,15 +43,15 @@
   <!-- Force fresh binaries every Release build by cleaning intermediate files -->
   <Target Name="CleanForFreshBuild" BeforeTargets="BeforeBuild" Condition="'$(Configuration)' == 'Release'">
     <Delete Files="$(IntermediateOutputPath)$(AssemblyName).dll" Condition="Exists('$(IntermediateOutputPath)$(AssemblyName).dll')" />
-    <Delete Files="$(ProjectDir)Release\AudibleBreakingGlassJars_Addon_JarReturn-0.1.0-beta.zip" Condition="Exists('$(ProjectDir)Release\AudibleBreakingGlassJars_Addon_JarReturn-0.1.0-beta.zip')" />
+    <Delete Files="$(ProjectDir)Release\AudibleBreakingGlassJars_Addon_JarReturn-0.1.1.zip" Condition="Exists('$(ProjectDir)Release\AudibleBreakingGlassJars_Addon_JarReturn-0.1.1.zip')" />
     <Message Importance="High" Text="Cleaning for fresh release build..." />
   </Target>
 
   <!-- Create release zip after build -->
   <Target Name="CreateReleaseZip" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
     <ZipDirectory SourceDirectory="$(ProjectDir)Release\AudibleBreakingGlassJars_Addon_JarReturn"
-                  DestinationFile="$(ProjectDir)Release\AudibleBreakingGlassJars_Addon_JarReturn-0.1.0-beta.zip"
+                  DestinationFile="$(ProjectDir)Release\AudibleBreakingGlassJars_Addon_JarReturn-0.1.1.zip"
                   Overwrite="true" />
-    <Message Importance="High" Text="Created Release\AudibleBreakingGlassJars_Addon_JarReturn-0.1.0-beta.zip" />
+    <Message Importance="High" Text="Created Release\AudibleBreakingGlassJars_Addon_JarReturn-0.1.1.zip" />
   </Target>
 </Project>

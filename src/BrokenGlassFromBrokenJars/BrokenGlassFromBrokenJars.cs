@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using HarmonyLib;
 using UnityEngine;
 
@@ -158,6 +159,11 @@ public static class BrokenGlass_ItemActionEat_Patches
         GameManager.Instance.StartCoroutine(CheckJarAndGiveBrokenGlass(player, jarCountBefore, createItemName));
     }
 
+    /// <summary>
+    /// Waits for inventory to update, then checks if jar was returned.
+    /// Checks: 1) bag/toolbelt count increased, 2) jar dropped on ground nearby.
+    /// Only gives broken glass if jar truly broke (not in inventory AND not on ground).
+    /// </summary>
     private static IEnumerator CheckJarAndGiveBrokenGlass(EntityPlayerLocal player, int countBefore, string itemName)
     {
         // Wait multiple frames for inventory to update (same timing as main mod)
@@ -170,13 +176,26 @@ public static class BrokenGlass_ItemActionEat_Patches
 
         int countAfter = CountItem(player, itemName);
 
-        // If item count didn't increase, the jar broke - give broken glass
-        if (countAfter <= countBefore)
+        // If item count increased, jar was returned to inventory/toolbelt
+        if (countAfter > countBefore)
         {
             if (BrokenGlassFromBrokenJars.DebugMode)
-                Debug.Log($"[BrokenGlass-Debug] JAR BROKE! Giving broken glass...");
-            BrokenGlassFromBrokenJars.GiveBrokenGlass(player);
+                Debug.Log($"[BrokenGlass-Debug] Jar returned to inventory (after > before)");
+            yield break;
         }
+
+        // Count didn't increase - check if jar was dropped on ground (inventory full scenario)
+        if (IsItemDroppedNearby(player, itemName))
+        {
+            if (BrokenGlassFromBrokenJars.DebugMode)
+                Debug.Log($"[BrokenGlass-Debug] Jar dropped on ground (inventory full)");
+            yield break;
+        }
+
+        // Jar not in inventory AND not on ground = jar broke - give broken glass
+        if (BrokenGlassFromBrokenJars.DebugMode)
+            Debug.Log($"[BrokenGlass-Debug] JAR BROKE! (not in inventory, not on ground) Giving broken glass...");
+        BrokenGlassFromBrokenJars.GiveBrokenGlass(player);
     }
 
     #endregion
@@ -225,16 +244,81 @@ public static class BrokenGlass_ItemActionEat_Patches
 
     #region Helpers
 
+    /// <summary>
+    /// Range in blocks to check for dropped items on the ground.
+    /// Small radius since drops happen at player's feet.
+    /// </summary>
+    private const float GROUND_CHECK_RANGE = 5f;
+
+    /// <summary>
+    /// Reusable list for entity scanning to avoid allocations.
+    /// </summary>
+    private static readonly List<Entity> _entityScanList = new List<Entity>();
+
     private static int CountItem(EntityPlayerLocal player, string itemName)
     {
         try
         {
             var item = ItemClass.GetItem(itemName);
-            return player.bag.GetItemCount(item);
+            // Count in both bag (backpack) and inventory (toolbelt)
+            int bagCount = player.bag.GetItemCount(item);
+            int toolbeltCount = player.inventory.GetItemCount(item);
+            return bagCount + toolbeltCount;
         }
         catch
         {
             return 0;
+        }
+    }
+
+    /// <summary>
+    /// Checks if an item was dropped on the ground nearby (within GROUND_CHECK_RANGE blocks).
+    /// Used when inventory is full and jar couldn't be added to bag/toolbelt.
+    /// </summary>
+    private static bool IsItemDroppedNearby(EntityPlayerLocal player, string itemName)
+    {
+        try
+        {
+            World world = GameManager.Instance?.World;
+            if (world == null)
+                return false;
+
+            // Get the item type ID we're looking for
+            ItemValue searchItem = ItemClass.GetItem(itemName);
+            if (searchItem.IsEmpty())
+                return false;
+
+            int searchItemType = searchItem.type;
+
+            // Create bounds around player position
+            Vector3 playerPos = player.position;
+            Bounds bounds = new Bounds(playerPos, new Vector3(GROUND_CHECK_RANGE * 2, GROUND_CHECK_RANGE * 2, GROUND_CHECK_RANGE * 2));
+
+            // Scan for EntityItem (dropped items) in range
+            _entityScanList.Clear();
+            world.GetEntitiesInBounds(typeof(EntityItem), bounds, _entityScanList);
+
+            for (int i = 0; i < _entityScanList.Count; i++)
+            {
+                if (_entityScanList[i] is EntityItem droppedItem)
+                {
+                    // Check if this dropped item matches what we're looking for
+                    if (droppedItem.itemStack.itemValue.type == searchItemType)
+                    {
+                        if (BrokenGlassFromBrokenJars.DebugMode)
+                            Debug.Log($"[BrokenGlass-Debug] Found dropped {itemName} on ground at distance {Vector3.Distance(playerPos, droppedItem.position):F1}");
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+        catch (Exception ex)
+        {
+            if (BrokenGlassFromBrokenJars.DebugMode)
+                Debug.Log($"[BrokenGlass-Debug] Error checking ground drops: {ex.Message}");
+            return false;
         }
     }
 
