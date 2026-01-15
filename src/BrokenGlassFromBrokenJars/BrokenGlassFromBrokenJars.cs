@@ -108,6 +108,7 @@ public static class BrokenGlass_ItemActionEat_Patches
 {
     [ThreadStatic] private static bool _checkingJar;
     [ThreadStatic] private static int _jarCountBefore;
+    [ThreadStatic] private static int _groundCountBefore;
     [ThreadStatic] private static EntityPlayerLocal _player;
     [ThreadStatic] private static string _createItemName;
 
@@ -131,9 +132,10 @@ public static class BrokenGlass_ItemActionEat_Patches
             _player = player;
             _createItemName = __instance.CreateItem;
             _jarCountBefore = CountItem(player, _createItemName);
-            
+            _groundCountBefore = CountGroundItems(player, _createItemName);
+
             if (BrokenGlassFromBrokenJars.DebugMode)
-                Debug.Log($"[BrokenGlass-Debug] TRACKING: '{_createItemName}' count before = {_jarCountBefore}");
+                Debug.Log($"[BrokenGlass-Debug] TRACKING: '{_createItemName}' inv={_jarCountBefore}, ground={_groundCountBefore}");
         }
     }
 
@@ -147,6 +149,7 @@ public static class BrokenGlass_ItemActionEat_Patches
 
         // Capture values for the coroutine
         int jarCountBefore = _jarCountBefore;
+        int groundCountBefore = _groundCountBefore;
         EntityPlayerLocal player = _player;
         string createItemName = _createItemName;
 
@@ -156,15 +159,16 @@ public static class BrokenGlass_ItemActionEat_Patches
         _createItemName = null;
 
         // Wait for inventory to update, then check if jar was returned
-        GameManager.Instance.StartCoroutine(CheckJarAndGiveBrokenGlass(player, jarCountBefore, createItemName));
+        GameManager.Instance.StartCoroutine(CheckJarAndGiveBrokenGlass(player, jarCountBefore, groundCountBefore, createItemName));
     }
 
     /// <summary>
     /// Waits for inventory to update, then checks if jar was returned.
-    /// Checks: 1) bag/toolbelt count increased, 2) jar dropped on ground nearby.
-    /// Only gives broken glass if jar truly broke (not in inventory AND not on ground).
+    /// Uses delta approach: compares counts BEFORE and AFTER drinking.
+    /// Jar returned if: inventory count increased OR ground count increased.
+    /// Only gives broken glass if neither count increased (jar truly broke).
     /// </summary>
-    private static IEnumerator CheckJarAndGiveBrokenGlass(EntityPlayerLocal player, int countBefore, string itemName)
+    private static IEnumerator CheckJarAndGiveBrokenGlass(EntityPlayerLocal player, int invCountBefore, int groundCountBefore, string itemName)
     {
         // Wait multiple frames for inventory to update (same timing as main mod)
         yield return null;
@@ -174,27 +178,28 @@ public static class BrokenGlass_ItemActionEat_Patches
         if (player == null)
             yield break;
 
-        int countAfter = CountItem(player, itemName);
+        int invCountAfter = CountItem(player, itemName);
+        int groundCountAfter = CountGroundItems(player, itemName);
 
-        // If item count increased, jar was returned to inventory/toolbelt
-        if (countAfter > countBefore)
+        // If inventory count increased, jar was returned to bag/toolbelt
+        if (invCountAfter > invCountBefore)
         {
             if (BrokenGlassFromBrokenJars.DebugMode)
-                Debug.Log($"[BrokenGlass-Debug] Jar returned to inventory (after > before)");
+                Debug.Log($"[BrokenGlass-Debug] Jar returned to inventory (inv increased)");
             yield break;
         }
 
-        // Count didn't increase - check if jar was dropped on ground (inventory full scenario)
-        if (IsItemDroppedNearby(player, itemName))
+        // If ground count increased, jar was dropped (inventory full scenario)
+        if (groundCountAfter > groundCountBefore)
         {
             if (BrokenGlassFromBrokenJars.DebugMode)
-                Debug.Log($"[BrokenGlass-Debug] Jar dropped on ground (inventory full)");
+                Debug.Log($"[BrokenGlass-Debug] Jar dropped on ground (ground count increased)");
             yield break;
         }
 
-        // Jar not in inventory AND not on ground = jar broke - give broken glass
+        // Neither inventory nor ground count increased = jar broke - give broken glass
         if (BrokenGlassFromBrokenJars.DebugMode)
-            Debug.Log($"[BrokenGlass-Debug] JAR BROKE! (not in inventory, not on ground) Giving broken glass...");
+            Debug.Log($"[BrokenGlass-Debug] JAR BROKE! (inv and ground counts unchanged) Giving broken glass...");
         BrokenGlassFromBrokenJars.GiveBrokenGlass(player);
     }
 
@@ -218,6 +223,7 @@ public static class BrokenGlass_ItemActionEat_Patches
             _player = player;
             _createItemName = __instance.CreateItem;
             _jarCountBefore = CountItem(player, _createItemName);
+            _groundCountBefore = CountGroundItems(player, _createItemName);
         }
     }
 
@@ -230,6 +236,7 @@ public static class BrokenGlass_ItemActionEat_Patches
             return;
 
         int jarCountBefore = _jarCountBefore;
+        int groundCountBefore = _groundCountBefore;
         EntityPlayerLocal player = _player;
         string createItemName = _createItemName;
 
@@ -237,7 +244,7 @@ public static class BrokenGlass_ItemActionEat_Patches
         _player = null;
         _createItemName = null;
 
-        GameManager.Instance.StartCoroutine(CheckJarAndGiveBrokenGlass(player, jarCountBefore, createItemName));
+        GameManager.Instance.StartCoroutine(CheckJarAndGiveBrokenGlass(player, jarCountBefore, groundCountBefore, createItemName));
     }
 
     #endregion
@@ -272,21 +279,21 @@ public static class BrokenGlass_ItemActionEat_Patches
     }
 
     /// <summary>
-    /// Checks if an item was dropped on the ground nearby (within GROUND_CHECK_RANGE blocks).
-    /// Used when inventory is full and jar couldn't be added to bag/toolbelt.
+    /// Counts how many of an item are dropped on the ground nearby (within GROUND_CHECK_RANGE blocks).
+    /// Used for delta detection: compare count before and after to see if a new item was dropped.
     /// </summary>
-    private static bool IsItemDroppedNearby(EntityPlayerLocal player, string itemName)
+    private static int CountGroundItems(EntityPlayerLocal player, string itemName)
     {
         try
         {
             World world = GameManager.Instance?.World;
             if (world == null)
-                return false;
+                return 0;
 
             // Get the item type ID we're looking for
             ItemValue searchItem = ItemClass.GetItem(itemName);
             if (searchItem.IsEmpty())
-                return false;
+                return 0;
 
             int searchItemType = searchItem.type;
 
@@ -298,6 +305,7 @@ public static class BrokenGlass_ItemActionEat_Patches
             _entityScanList.Clear();
             world.GetEntitiesInBounds(typeof(EntityItem), bounds, _entityScanList);
 
+            int totalCount = 0;
             for (int i = 0; i < _entityScanList.Count; i++)
             {
                 if (_entityScanList[i] is EntityItem droppedItem)
@@ -305,20 +313,18 @@ public static class BrokenGlass_ItemActionEat_Patches
                     // Check if this dropped item matches what we're looking for
                     if (droppedItem.itemStack.itemValue.type == searchItemType)
                     {
-                        if (BrokenGlassFromBrokenJars.DebugMode)
-                            Debug.Log($"[BrokenGlass-Debug] Found dropped {itemName} on ground at distance {Vector3.Distance(playerPos, droppedItem.position):F1}");
-                        return true;
+                        totalCount += droppedItem.itemStack.count;
                     }
                 }
             }
 
-            return false;
+            return totalCount;
         }
         catch (Exception ex)
         {
             if (BrokenGlassFromBrokenJars.DebugMode)
-                Debug.Log($"[BrokenGlass-Debug] Error checking ground drops: {ex.Message}");
-            return false;
+                Debug.Log($"[BrokenGlass-Debug] Error counting ground items: {ex.Message}");
+            return 0;
         }
     }
 

@@ -231,6 +231,7 @@ public static class ItemActionEat_Patches
     // ThreadStatic to handle potential multi-threaded scenarios safely
     [ThreadStatic] private static bool _checkingJar;
     [ThreadStatic] private static int _jarCountBefore;
+    [ThreadStatic] private static int _groundCountBefore;
     [ThreadStatic] private static EntityPlayerLocal _player;
     [ThreadStatic] private static string _createItemName;
 
@@ -268,8 +269,9 @@ public static class ItemActionEat_Patches
             _player = player;
             _createItemName = __instance.CreateItem;
             _jarCountBefore = CountItem(player, _createItemName);
+            _groundCountBefore = CountGroundItems(player, _createItemName);
             if (AudibleBreakingGlassJars.DebugMode)
-                Debug.Log($"[ABGJ-Debug] TRACKING: '{_createItemName}' count before consumption = {_jarCountBefore}");
+                Debug.Log($"[ABGJ-Debug] TRACKING: '{_createItemName}' inventory={_jarCountBefore}, ground={_groundCountBefore}");
         }
         else
         {
@@ -291,6 +293,7 @@ public static class ItemActionEat_Patches
 
         // Capture values for the coroutine (ThreadStatic won't work across frames)
         int jarCountBefore = _jarCountBefore;
+        int groundCountBefore = _groundCountBefore;
         EntityPlayerLocal player = _player;
         string createItemName = _createItemName;
 
@@ -300,23 +303,24 @@ public static class ItemActionEat_Patches
         _createItemName = null;
 
         if (AudibleBreakingGlassJars.DebugMode)
-            Debug.Log($"[ABGJ-Debug] consume() Postfix - Scheduling delayed check for '{createItemName}' (countBefore={jarCountBefore})");
+            Debug.Log($"[ABGJ-Debug] consume() Postfix - Scheduling delayed check for '{createItemName}' (inv={jarCountBefore}, ground={groundCountBefore})");
 
         // Wait one frame for inventory to update, then check if jar was returned
-        GameManager.Instance.StartCoroutine(CheckJarAfterDelay(player, jarCountBefore, createItemName));
+        GameManager.Instance.StartCoroutine(CheckJarAfterDelay(player, jarCountBefore, groundCountBefore, createItemName));
     }
 
     /// <summary>
     /// Waits for inventory to update, then checks if jar was returned.
-    /// Checks: 1) bag/toolbelt count increased, 2) jar dropped on ground nearby.
-    /// Only plays sound if jar truly broke (not in inventory AND not on ground).
+    /// Uses delta approach: compares counts BEFORE and AFTER drinking.
+    /// Jar returned if: inventory count increased OR ground count increased.
+    /// Only plays sound if neither count increased (jar truly broke).
     /// </summary>
-    private static IEnumerator CheckJarAfterDelay(EntityPlayerLocal player, int countBefore, string itemName)
+    private static IEnumerator CheckJarAfterDelay(EntityPlayerLocal player, int invCountBefore, int groundCountBefore, string itemName)
     {
         float startTime = Time.time;
 
         if (AudibleBreakingGlassJars.DebugMode)
-            Debug.Log($"[ABGJ-Debug] CheckJarAfterDelay - START: '{itemName}' countBefore={countBefore}");
+            Debug.Log($"[ABGJ-Debug] CheckJarAfterDelay - START: '{itemName}' inv={invCountBefore}, ground={groundCountBefore}");
 
         // Wait multiple frames to ensure inventory has updated
         yield return null;  // Frame 1
@@ -330,31 +334,32 @@ public static class ItemActionEat_Patches
             yield break;
         }
 
-        int countAfter = CountItem(player, itemName);
+        int invCountAfter = CountItem(player, itemName);
+        int groundCountAfter = CountGroundItems(player, itemName);
         float elapsed = Time.time - startTime;
 
         if (AudibleBreakingGlassJars.DebugMode)
-            Debug.Log($"[ABGJ-Debug] CheckJarAfterDelay - CHECK '{itemName}': before={countBefore}, after={countAfter} (elapsed={elapsed:F3}s)");
+            Debug.Log($"[ABGJ-Debug] CheckJarAfterDelay - CHECK '{itemName}': inv {invCountBefore}->{invCountAfter}, ground {groundCountBefore}->{groundCountAfter} (elapsed={elapsed:F3}s)");
 
-        // If item count increased, jar was returned to inventory/toolbelt
-        if (countAfter > countBefore)
+        // If inventory count increased, jar was returned to bag/toolbelt
+        if (invCountAfter > invCountBefore)
         {
             if (AudibleBreakingGlassJars.DebugMode)
-                Debug.Log($"[ABGJ-Debug] Jar returned to inventory (after > before, no sound)");
+                Debug.Log($"[ABGJ-Debug] Jar returned to inventory (inv increased, no sound)");
             yield break;
         }
 
-        // Count didn't increase - check if jar was dropped on ground (inventory full scenario)
-        if (IsItemDroppedNearby(player, itemName))
+        // If ground count increased, jar was dropped (inventory full scenario)
+        if (groundCountAfter > groundCountBefore)
         {
             if (AudibleBreakingGlassJars.DebugMode)
-                Debug.Log($"[ABGJ-Debug] Jar dropped on ground (inventory full, no sound)");
+                Debug.Log($"[ABGJ-Debug] Jar dropped on ground (ground count increased, no sound)");
             yield break;
         }
 
-        // Jar not in inventory AND not on ground = jar broke
+        // Neither inventory nor ground count increased = jar broke
         if (AudibleBreakingGlassJars.DebugMode)
-            Debug.Log($"[ABGJ-Debug] JAR BROKE! (not in inventory, not on ground) Playing sound...");
+            Debug.Log($"[ABGJ-Debug] JAR BROKE! (inv and ground counts unchanged) Playing sound...");
         AudibleBreakingGlassJars.PlaySound(player);
     }
 
@@ -377,6 +382,7 @@ public static class ItemActionEat_Patches
             _player = player;
             _createItemName = __instance.CreateItem;
             _jarCountBefore = CountItem(player, _createItemName);
+            _groundCountBefore = CountGroundItems(player, _createItemName);
         }
     }
 
@@ -389,6 +395,7 @@ public static class ItemActionEat_Patches
 
         // Capture values for the coroutine
         int jarCountBefore = _jarCountBefore;
+        int groundCountBefore = _groundCountBefore;
         EntityPlayerLocal player = _player;
         string createItemName = _createItemName;
 
@@ -398,7 +405,7 @@ public static class ItemActionEat_Patches
         _createItemName = null;
 
         // Wait one frame for inventory to update
-        GameManager.Instance.StartCoroutine(CheckJarAfterDelay(player, jarCountBefore, createItemName));
+        GameManager.Instance.StartCoroutine(CheckJarAfterDelay(player, jarCountBefore, groundCountBefore, createItemName));
     }
 
     #endregion
@@ -433,21 +440,21 @@ public static class ItemActionEat_Patches
     }
 
     /// <summary>
-    /// Checks if an item was dropped on the ground nearby (within GROUND_CHECK_RANGE blocks).
-    /// Used when inventory is full and jar couldn't be added to bag/toolbelt.
+    /// Counts how many of an item are dropped on the ground nearby (within GROUND_CHECK_RANGE blocks).
+    /// Used for delta detection: compare count before and after to see if a new item was dropped.
     /// </summary>
-    private static bool IsItemDroppedNearby(EntityPlayerLocal player, string itemName)
+    private static int CountGroundItems(EntityPlayerLocal player, string itemName)
     {
         try
         {
             World world = GameManager.Instance?.World;
             if (world == null)
-                return false;
+                return 0;
 
             // Get the item type ID we're looking for
             ItemValue searchItem = ItemClass.GetItem(itemName);
             if (searchItem.IsEmpty())
-                return false;
+                return 0;
 
             int searchItemType = searchItem.type;
 
@@ -459,6 +466,7 @@ public static class ItemActionEat_Patches
             _entityScanList.Clear();
             world.GetEntitiesInBounds(typeof(EntityItem), bounds, _entityScanList);
 
+            int totalCount = 0;
             for (int i = 0; i < _entityScanList.Count; i++)
             {
                 if (_entityScanList[i] is EntityItem droppedItem)
@@ -466,20 +474,18 @@ public static class ItemActionEat_Patches
                     // Check if this dropped item matches what we're looking for
                     if (droppedItem.itemStack.itemValue.type == searchItemType)
                     {
-                        if (AudibleBreakingGlassJars.DebugMode)
-                            Debug.Log($"[ABGJ-Debug] Found dropped {itemName} on ground at distance {Vector3.Distance(playerPos, droppedItem.position):F1}");
-                        return true;
+                        totalCount += droppedItem.itemStack.count;
                     }
                 }
             }
 
-            return false;
+            return totalCount;
         }
         catch (Exception ex)
         {
             if (AudibleBreakingGlassJars.DebugMode)
-                Debug.Log($"[ABGJ-Debug] Error checking ground drops: {ex.Message}");
-            return false;
+                Debug.Log($"[ABGJ-Debug] Error counting ground items: {ex.Message}");
+            return 0;
         }
     }
 
