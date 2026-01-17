@@ -1,0 +1,39 @@
+================================================================================
+UPDATE POST - v0.1.2 Jar Return On Craft (Nexus Mods Posts/Forums)
+================================================================================
+
+[size=5][b]Jar Return On Craft v0.1.2 - Bug Fix[/b][/size]
+
+Fixed a bug where players could get free empty jars without consuming any ingredients!
+
+[size=4][b]What's Fixed[/b][/size]
+
+[b]The Bug:[/b]
+If your crafting queue was full and you tried to cook a recipe that uses jar contents (like water), the mod would give you empty jars even though:
+[list]
+[*]The crafting didn't actually start (queue full)
+[*]No ingredients were consumed
+[/list]
+
+This was essentially a free jar exploit.
+
+[b]The Fix:[/b]
+[list]
+[*]Now properly detects when crafting fails due to full queue
+[*]Only returns jars when ingredients are actually consumed
+[*]Works with vanilla queue sizes and modded workstations
+[/list]
+
+[size=4][b]How to Update[/b][/size]
+
+[list=1]
+[*]Download the new version
+[*]Delete the old [b]AudibleBreakingGlassJars_Addon_JarReturn[/b] folder from your Mods directory
+[*]Extract the new version in its place
+[/list]
+
+[size=4][b]Feedback[/b][/size]
+
+If you encounter any issues, please report them in the comments or on [url=https://github.com/rk-gamemods/7D2D-AudibleBreakingGlassJars/issues]GitHub[/url].
+
+Enjoy!

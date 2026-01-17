@@ -167,9 +167,9 @@ When a glass jar breaks from drinking, you now receive 1x [b]Broken Glass[/b] (r
 [line]
 
 [size=4][b]Addon: Jar Return On Craft[/b][/size]
-[i]v0.1.1[/i]
+[i]v0.1.2[/i]
 
-Changes when jars are freed during crafting. When you craft with jar contents (water, etc.), the empty jar is returned [b]immediately[/b] when crafting starts - and the liquid is [b]NOT refunded[/b] if you cancel.
+Changes when jars are returned during crafting. When you craft with jar contents (water, etc.), the empty jar is returned immediately when crafting starts - and the liquid is NOT refunded if you cancel.
 
 [b]The Problem:[/b]
 When you craft with jar contents (like water), vanilla keeps the jar "inside" the crafted food. You might get it back when you [i]eat[/i] the food (based on jar return %). That's weird - why would eating cornbread give you an empty jar? This addon frees the jar when you pour the liquid to start cooking. When cancelling the craft, no jar ingredients are returned and the liquid component is lost.
@@ -225,6 +225,12 @@ For best results, use with [url=https://www.nexusmods.com/7daystodie/mods/9353]V
 [*]Fixed: Jar returned to toolbelt incorrectly gave broken glass
 [*]Fixed: Jar dropped on ground (inventory full) incorrectly gave broken glass
 [*]Now checks bag, toolbelt, AND nearby ground drops
+[/list]
+
+[b]v0.1.2 - Jar Return On Craft[/b]
+[list]
+[*]Fixed: Queue full exploit - no longer gives free jars when crafting queue is full
+[*]Now properly detects when crafting fails and no ingredients are consumed
 [/list]
 
 [b]v0.1.1 - Jar Return On Craft[/b]
