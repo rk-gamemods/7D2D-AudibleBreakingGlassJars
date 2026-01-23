@@ -35,7 +35,8 @@ This mod plays a glass breaking sound effect when your jar doesn't survive the d
 3. Ensure EAC is disabled (required for all DLL mods)
 
 Your folder structure should be:
-```
+
+```text
 7 Days To Die/
 └── Mods/
     └── AudibleBreakingGlassJars/           # Main mod
@@ -86,11 +87,13 @@ The custom sound is the default because the game's glass sound is designed for b
 When a jar breaks from drinking, you get 1x **Broken Glass** instead of nothing.
 
 ### Features
+
 - Gives 1 broken glass when jars break from drinking
 - Tries backpack first, then toolbelt, then drops on ground
 - Works with or without the main sound mod
 
 ### Installation
+
 Copy `AudibleBreakingGlassJars_Addon_BrokenGlass` folder to `Mods/`
 
 ---
@@ -102,12 +105,14 @@ Copy `AudibleBreakingGlassJars_Addon_BrokenGlass` folder to `Mods/`
 When you craft with water, you get the empty jar back right away instead of it staying inside the food.
 
 ### Features
+
 - Returns empty jar when craft job starts
 - Canceling does NOT refund the liquid (you already got the jar)
 - Exception: jar-to-jar recipes (water→tea) use vanilla behavior
 - Works with or without the main sound mod
 
 ### Installation
+
 Copy `AudibleBreakingGlassJars_Addon_JarReturn` folder to `Mods/`
 
 ### Recommended: VanillaJarFix
@@ -171,13 +176,14 @@ dotnet build JarReturnOnCraft.csproj -c Release
 ```
 
 Outputs:
+
 - `Release/AudibleBreakingGlassJars/` - Main mod
 - `Release/AudibleBreakingGlassJars_Addon_BrokenGlass/` - Broken glass addon
 - `Release/AudibleBreakingGlassJars_Addon_JarReturn/` - Jar return addon
 
 ## Project Structure
 
-```
+```text
 AudibleBreakingGlassJars/
 ├── AudibleBreakingGlassJars.csproj        # Main mod build
 ├── BrokenGlassFromBrokenJars.csproj       # Addon build
@@ -204,26 +210,31 @@ AudibleBreakingGlassJars/
 ## Changelog
 
 ### v1.1.0 - AudibleBreakingGlassJars
+
 - Fixed: Jar returned to toolbelt incorrectly triggered break sound (reported by DanColeman86)
 - Fixed: Jar dropped on ground (inventory full) incorrectly triggered break sound
 - Now checks bag, toolbelt, AND nearby ground drops before playing sound
 
 ### v1.0.0 - AudibleBreakingGlassJars
+
 - Jar break detection via item count comparison
 - Custom sound loading at runtime (OGG/WAV)
 - Fallback to game sounds if custom sound fails
 - Configurable sound name and debug mode
 
 ### v0.2.0 - BrokenGlassFromBrokenJars
+
 - Fixed: Jar returned to toolbelt incorrectly gave broken glass
 - Fixed: Jar dropped on ground (inventory full) incorrectly gave broken glass
 - Now checks bag, toolbelt, AND nearby ground drops
 
 ### v0.1.1 - JarReturnOnCraft
+
 - Added debug mode toggle (reduces log spam)
 - Jar return logs now only show when debug mode enabled
 
 ### v0.1.0 - Addons Initial Release
+
 - BrokenGlassFromBrokenJars: Gives broken glass when jars break from drinking
 - JarReturnOnCraft: Returns empty jar when crafting starts, skips refund on cancel
 

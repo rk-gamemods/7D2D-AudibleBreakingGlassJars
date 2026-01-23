@@ -9,6 +9,7 @@ This mod plays an audio cue when drinking a jarred beverage results in the glass
 ## Architecture
 
 ### Multi-Project Design
+
 The project now contains three separate builds:
 
 | Project File | Output DLL | Purpose |
@@ -20,6 +21,7 @@ The project now contains three separate builds:
 Each addon is fully independent and can be used without the main mod.
 
 ### Dependencies
+
 - **0Harmony.dll** - Harmony 2.x patching library (provided by TFP_Harmony mod)
 - **Assembly-CSharp.dll** - Game's main assembly
 - **UnityEngine.CoreModule.dll** - Unity engine core
@@ -41,6 +43,7 @@ if (CreateItem != null && CreateItemCount > 0 &&
 ```
 
 **Key Properties on ItemActionEat:**
+
 | Property | Type | Purpose |
 |----------|------|---------|
 | `CreateItem` | string | Item to create after consumption (e.g., "resourceGlassJar") |
@@ -71,7 +74,7 @@ We cannot directly observe the random roll that determines jar fate. Instead:
 2. **Postfix**: After consumption, count again
 3. **Logic**: If count didn't increase, the jar broke
 
-```
+```text
 Before: 5 jars → Drink water → After: 6 jars = Jar returned (no sound)
 Before: 5 jars → Drink water → After: 5 jars = Jar broke (play sound)
 ```
@@ -128,22 +131,28 @@ private static IEnumerator CheckJarAfterDelay(EntityPlayerLocal player, int jarC
 The `Audio.Manager` class has multiple `PlayInsidePlayerHead` overloads with **very different behavior**:
 
 #### 2-Parameter Version (DO NOT USE)
+
 ```csharp
 Manager.PlayInsidePlayerHead(string soundGroupNameBegin, int entityID)
 ```
+
 **This version expects TWO sounds to exist:**
+
 1. `soundName` - The base sound
 2. `soundName_lp` - A loop variant
 
 If either is missing, **the call silently fails** with no error or exception.
 
 #### 5-Parameter Version (USE THIS)
+
 ```csharp
 Manager.PlayInsidePlayerHead(string soundGroupName, int entityID, float delay, bool isLooping, bool isUnique)
 ```
+
 **This version works with a single sound definition.** No `_lp` variant required.
 
 ### Our Implementation
+
 ```csharp
 // CORRECT - Uses 5-parameter overload
 Manager.PlayInsidePlayerHead(SoundName, player.entityId, 0f, false, false);
@@ -155,25 +164,30 @@ Manager.PlayInsidePlayerHead(SoundName, player.entityId, 0f, false, false);
 ### Sound Requirements
 
 For a sound to work with our mod, it must:
+
 1. Exist in the game's `sounds.xml` as a `<SoundDataNode>`
 2. Have valid `<AudioClip>` references to actual audio files
 3. NOT require positional audio (we play "inside player head")
 
 **Verified working sounds:**
+
 - `glassdestroy` - Glass block destruction (default)
 - `itembreak` - Generic item breaking
 - `brokenglass_place` - UI glass sound (subtle)
 
 **Sounds that may not work well:**
+
 - Sounds using `AudioSource_Impact.prefab` designed for 3D world positions
 - Sounds requiring the `_lp` loop variant
 
 ## Configuration
 
 ### Config File Location
+
 `Config/config.xml` inside the mod folder.
 
 ### Config Schema
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
@@ -183,6 +197,7 @@ For a sound to work with our mod, it must:
 ```
 
 ### Sound Options
+
 | Sound Name | Description |
 |------------|-------------|
 | `abgj_glass_shatter` | Custom sound included with mod (default) |
@@ -190,7 +205,9 @@ For a sound to work with our mod, it must:
 | `itembreak` | Game's generic item breaking sound |
 
 ### Custom Sound Registration
+
 The mod's `Config/sounds.xml` registers the custom sound with the game:
+
 ```xml
 <configs>
     <append xpath="/Sounds">
@@ -204,12 +221,15 @@ The mod's `Config/sounds.xml` registers the custom sound with the game:
 ```
 
 Key elements:
+
 - `#@modfolder:` prefix resolves to this mod's folder
 - Uses `AudioSource_Interact.prefab` for UI-type sounds (works with `PlayInsidePlayerHead`)
 - Sound file in `Sounds/glass-shatter.ogg`
 
 ### Security Validation
+
 Sound names are validated to prevent path traversal:
+
 - Rejected: Contains `/`, `\`, or `..`
 - Only simple sound names are accepted
 
@@ -217,7 +237,7 @@ Sound names are validated to prevent path traversal:
 
 When `<DebugMode>true</DebugMode>` is set, the mod logs detailed information:
 
-```
+```text
 [ABGJ-Debug] ========== CONSUME EVENT ==========
 [ABGJ-Debug] Item: drinkJarPureMineralWater
 [ABGJ-Debug] CreateItem: resourceGlassJar
@@ -231,6 +251,7 @@ When `<DebugMode>true</DebugMode>` is set, the mod logs detailed information:
 ```
 
 **Log prefixes:**
+
 - `[AudibleBreakingGlassJars]` - Normal operation messages
 - `[ABGJ-Debug]` - Debug mode messages (verbose)
 
@@ -264,19 +285,21 @@ When `<DebugMode>true</DebugMode>` is set, the mod logs detailed information:
 ### Adding New Features
 
 **To support custom sound files:**
+
 1. Sounds must be registered with the game's audio system
 2. Create a `sounds.xml` in the mod's `Config/` folder
 3. Reference the audio file path relative to mod folder
 4. This requires additional implementation (currently TODO)
 
 **To add volume control:**
+
 1. The `PlayInsidePlayerHead` method doesn't support volume
 2. Would need to use `Manager.Play()` with position instead
 3. Or modify the sound definition in a custom `sounds.xml`
 
 ## File Structure
 
-```
+```text
 AudibleBreakingGlassJars/
 ├── AudibleBreakingGlassJars.csproj        # Main mod
 ├── BrokenGlassFromBrokenJars.csproj       # Addon
@@ -312,7 +335,9 @@ AudibleBreakingGlassJars/
 ## Compatibility
 
 ### ProxiCraft Integration
+
 This mod is registered as compatible in ProxiCraft's `ModCompatibility.cs`:
+
 ```csharp
 { "AudibleBreakingGlassJars", "Glass jar break sound - compatible (patches ItemActionEat, only reads inventory)" }
 ```
@@ -320,13 +345,14 @@ This mod is registered as compatible in ProxiCraft's `ModCompatibility.cs`:
 We only READ inventory counts; we don't modify items. This makes us compatible with inventory-modifying mods.
 
 ### Potential Conflicts
+
 - Other mods patching `ItemActionEat.consume()` - unlikely to conflict (we're observing, not modifying)
 - Mods that change jar return mechanics - our detection should still work
 - Audio overhaul mods - may affect which sounds are available
 
 ## Build Instructions
 
-```bash
+```powershell
 cd AudibleBreakingGlassJars
 dotnet build -c Release
 ```
@@ -377,12 +403,14 @@ The jar should be freed when you pour the liquid into the pot, not when you eat 
 ### Two-Patch Design
 
 **Patch 1: ReturnJarOnCraftStart** (Postfix on `ItemActionEntryCraft.OnActivated`)
+
 - Triggers when a craft job is added to the queue
 - Detects jar content items in recipe ingredients
 - Immediately returns empty jar to player inventory
 - Exception: If recipe OUTPUT is also jar-based, skip (vanilla behavior)
 
 **Patch 2: SkipJarContentOnCancel** (Prefix on `XUiC_RecipeStack.HandleOnPress`)
+
 - Completely replaces cancel logic
 - Iterates through recipe ingredients
 - Skips refunding any jar content items
@@ -414,12 +442,14 @@ public static bool IsJarContent(string itemName, out string jarItem)
 ```
 
 **Key detection criteria:**
+
 - `ItemActionEat.UseJarRefund == true` - Item respects jar refund percentage
 - `ItemActionEat.CreateItem != null` - Item creates something when consumed (the jar)
 
 ### Jar-to-Jar Recipe Exception
 
 Some recipes convert one jar drink to another:
+
 - `drinkJarBoiledWater` → `drinkJarGoldenrodTea`
 - `drinkJarRiverWater` → `drinkJarBoiledWater`
 
@@ -457,10 +487,12 @@ Config is **supplemental** - it only affects items explicitly listed. All other 
 [VanillaJarFix](https://www.nexusmods.com/7daystodie/mods/9353) fixes a vanilla data bug where many solid foods (cornbread, boiled meat, etc.) incorrectly have `UseJarRefund="true"`. These items shouldn't have jar properties at all.
 
 Our addon and VanillaJarFix solve **different problems**:
+
 - **VanillaJarFix**: Removes jar properties from items that shouldn't have them (data fix)
 - **JarReturnOnCraft**: Changes when jars are freed for items that correctly have jar contents (behavior fix)
 
 Together they make jar handling sensible:
+
 1. VanillaJarFix cleans up the bad data
 2. Our addon handles actual liquids correctly
 

@@ -11,11 +11,13 @@
 ## Feature Overview
 
 ### Core Mechanic
+
 When a player starts crafting a recipe that uses "jar content" items (like `drinkJarBoiledWater`), the glass jar (`drinkJarEmpty`) is immediately returned to the player - simulating pouring water into the cooking pot.
 
 If the crafting job is later cancelled, the "jar content" ingredient is NOT returned (since the jar was already given back).
 
 ### Critical Exception: Jar-to-Jar Recipes
+
 **If the recipe OUTPUT is also a jar-based item, vanilla behavior applies.**
 
 | Recipe Type | Example | On Start | On Cancel |
@@ -27,6 +29,7 @@ If the crafting job is later cancelled, the "jar content" ingredient is NOT retu
 This ensures you don't lose jars when making drinks - the liquid transfers to the output jar.
 
 ### Gameplay Justification
+
 - **Realism**: You pour water from a jar into a pot - the jar is now empty and available
 - **Consistency**: Aligns with the glass jar ecosystem from AudibleBreakingGlassJars  
 - **Balance**: Prevents exploit of getting free jars from cancel-spam
@@ -110,6 +113,7 @@ for (int k = 0; k < array.Length; k++)
 **File:** [Recipe.cs](../../7D2DCodebase/Assembly-CSharp/Recipe.cs)
 
 Recipes contain:
+
 - `List<ItemStack> ingredients` - List of required items with counts
 - `int itemValueType` - Output item type
 - `string craftingArea` - Where it's crafted (campfire, workbench, etc.)
@@ -117,6 +121,7 @@ Recipes contain:
 #### Example Recipe from XML
 
 **File:** [recipes.xml](../../7D2DCodebase/Data/Config/recipes.xml) (Lines 1752-1754)
+
 ```xml
 <recipe name="drinkJarBoiledWater" count="1" craft_area="campfire" craft_tool="toolCookingPot" tags="...">
     <ingredient name="drinkJarRiverWater" count="1"/>
@@ -193,6 +198,7 @@ Workstation state syncs via `NetPackageTileEntity` when player closes UI. The `b
 **Target:** `ItemActionEntryCraft.OnActivated()`  
 **Timing:** After ingredients consumed (line ~179)  
 **Logic:**
+
 1. Iterate `recipe.ingredients`
 2. For each ingredient, check if it's in our "jar content" list
 3. If yes, call `AddItem(new ItemStack(jarItem, ingredientCount))`
@@ -214,6 +220,7 @@ public class Patch_ReturnJarOnCraft
 **Target:** `XUiC_RecipeStack.HandleOnPress()`  
 **Timing:** Before original method  
 **Logic:**
+
 1. Copy original method logic
 2. In ingredient loop, skip items that are in our "jar content" list
 3. Return `false` to prevent original execution
@@ -240,6 +247,7 @@ The mod uses **dynamic detection** plus optional **XML config overrides**.
 #### Dynamic Detection (Automatic)
 
 At runtime, the mod checks if an item has:
+
 - `ItemActionEat` action with `UseJarRefund = true`
 - `CreateItem` property set (e.g., `"drinkJarEmpty"`)
 
@@ -258,6 +266,7 @@ if (_props.Values.ContainsKey("Create_item"))
 ```
 
 This automatically works with:
+
 - All vanilla jar items
 - Any modded items that follow the same XML pattern
 
@@ -276,6 +285,7 @@ For items that don't follow the standard pattern, add to `Config/JarContents.xml
 ```
 
 #### Detection Priority
+
 1. Check XML config overrides first
 2. Fall back to dynamic detection via `ItemActionEat`
 3. Cache results for performance
