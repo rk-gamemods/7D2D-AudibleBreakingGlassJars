@@ -59,11 +59,32 @@
     <Message Importance="High" Text="Cleaning for fresh release build..." />
   </Target>
 
-  <!-- Create release zip after build -->
+  <!-- Create release zip after build (with proper folder structure) -->
   <Target Name="CreateReleaseZip" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
-    <ZipDirectory SourceDirectory="$(ProjectDir)Release\AudibleBreakingGlassJars"
-                  DestinationFile="$(ProjectDir)Release\AudibleBreakingGlassJars-1.1.0.zip"
+    <PropertyGroup>
+      <StagingDir>$(ProjectDir)Release\_staging</StagingDir>
+      <ModFolderName>AudibleBreakingGlassJars</ModFolderName>
+      <ZipFileName>AudibleBreakingGlassJars-1.1.0.zip</ZipFileName>
+    </PropertyGroup>
+
+    <!-- Clean and create staging folder with mod subfolder -->
+    <RemoveDir Directories="$(StagingDir)" />
+    <MakeDir Directories="$(StagingDir)\$(ModFolderName)" />
+
+    <!-- Copy all files from output to staging subfolder -->
+    <ItemGroup>
+      <OutputFiles Include="$(ProjectDir)Release\$(ModFolderName)\**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(OutputFiles)"
+          DestinationFiles="@(OutputFiles->'$(StagingDir)\$(ModFolderName)\%(RecursiveDir)%(Filename)%(Extension)')" />
+
+    <!-- Zip the staging folder (now contains ModFolderName as root) -->
+    <ZipDirectory SourceDirectory="$(StagingDir)"
+                  DestinationFile="$(ProjectDir)Release\$(ZipFileName)"
                   Overwrite="true" />
-    <Message Importance="High" Text="Created Release\AudibleBreakingGlassJars-1.1.0.zip" />
+
+    <!-- Clean up staging -->
+    <RemoveDir Directories="$(StagingDir)" />
+    <Message Importance="High" Text="Created Release\$(ZipFileName) (extracts to $(ModFolderName)/)" />
   </Target>
 </Project>
